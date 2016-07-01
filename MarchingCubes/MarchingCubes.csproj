@@ -54,7 +54,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FirstPersonCamera.cs" />
     <Compile Include="Game.cs" />
+    <Compile Include="ICamera.cs" />
+    <Compile Include="MarchingCubesScene.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
