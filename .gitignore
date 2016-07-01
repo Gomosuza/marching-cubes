@@ -1,0 +1,5 @@
+*.user
+.vs
+**/[Bb]in/
+**/[Oo]bj/
+**/packages/*
