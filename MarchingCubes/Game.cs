@@ -23,7 +23,7 @@ namespace MarchingCubes
 			_renderContext = new DefaultRenderContext(_graphicsDeviceManager, Content);
 			var root = new SceneGraphRoot();
 
-			var scene = new MarchingCubesScene(_renderContext, Window);
+			var scene = new MarchingCubesScene(_renderContext);
 
 			root.AddAsyncWithLoadingScreen(scene, _renderContext);
 

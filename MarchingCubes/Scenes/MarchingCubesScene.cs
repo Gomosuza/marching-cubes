@@ -10,7 +10,6 @@ using Renderer.Meshes;
 using Renderer.Pens;
 using System;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 
 namespace MarchingCubes.Scenes
 {
@@ -19,7 +18,6 @@ namespace MarchingCubes.Scenes
 	/// </summary>
 	public class MarchingCubesScene : SceneGraphEntity, ISceneGraphEntityInitializeProgressReporter
 	{
-		private readonly GameWindow _window;
 		private ICamera _camera;
 		private readonly IRenderContext _renderContext;
 
@@ -28,9 +26,8 @@ namespace MarchingCubes.Scenes
 		private Pen _pen;
 		private bool _firstUpdate;
 
-		public MarchingCubesScene(IRenderContext renderContext, GameWindow window)
+		public MarchingCubesScene(IRenderContext renderContext)
 		{
-			_window = window;
 			_renderContext = renderContext;
 		}
 
@@ -127,7 +124,6 @@ namespace MarchingCubes.Scenes
 			{
 				_firstUpdate = false;
 				CenterCursor();
-				return;
 			}
 			var mouseState = Mouse.GetState();
 			var center = new Point(_renderContext.GraphicsDevice.Viewport.Width / 2, _renderContext.GraphicsDevice.Viewport.Height / 2);
@@ -165,13 +161,8 @@ namespace MarchingCubes.Scenes
 
 		private void CenterCursor()
 		{
-			// the monogame implementation (Mouse.SetPosition) doesn't seem to play too nice (sometimes input seems slugish, possibly because mouse events are skipped)
-			var rp = _window.ClientBounds;
-			SetCursorPos(rp.X + _renderContext.GraphicsDevice.Viewport.Width / 2, rp.Y + _renderContext.GraphicsDevice.Viewport.Height / 2);
+			Mouse.SetPosition(_renderContext.GraphicsDevice.Viewport.Width / 2, _renderContext.GraphicsDevice.Viewport.Height / 2);
 		}
-
-		[DllImport("User32.dll")]
-		private static extern bool SetCursorPos(int x, int y);
 
 		public override void Draw(GameTime gameTime)
 		{
