@@ -1,8 +1,8 @@
-﻿using MarchingCubes.Content;
-using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework.Content;
 using System;
 using System.IO;
 using System.Reflection;
+using MarchingCubes.Data;
 
 namespace MarchingCubes.Extensions
 {

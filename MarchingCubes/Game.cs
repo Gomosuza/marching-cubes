@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using MarchingCubes.Scenes;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 namespace MarchingCubes

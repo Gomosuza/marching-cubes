@@ -1,7 +1,7 @@
 ﻿using MarchingCubes.SceneGraph;
 using Renderer;
 
-namespace MarchingCubes
+namespace MarchingCubes.Scenes
 {
 	/// <summary>
 	/// The visualizer provides a nice realtime visualization of the inner workings of the marching cube alogrithm while it is assembling the result.

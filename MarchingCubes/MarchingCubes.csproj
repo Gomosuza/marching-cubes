@@ -56,23 +56,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Content\ContentLoaderAttribute.cs" />
-    <Compile Include="Content\IContentLoader.cs" />
-    <Compile Include="Content\ZippedMriDataContentLoader.cs" />
+    <Compile Include="Data\ContentLoaderAttribute.cs" />
+    <Compile Include="Data\IContentLoader.cs" />
+    <Compile Include="Data\ZippedMriDataContentLoader.cs" />
     <Compile Include="Extensions\ContentManagerExtensions.cs" />
     <Compile Include="FirstPersonCamera.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="ICamera.cs" />
     <Compile Include="IInputData.cs" />
-    <Compile Include="MarchingCubesScene.cs" />
-    <Compile Include="MarchingCubeVisualizer.cs" />
+    <Compile Include="Scenes\MarchingCubesScene.cs" />
+    <Compile Include="Scenes\MarchingCubeVisualizer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SceneGraph\ISceneGraphEntity.cs" />
     <Compile Include="SceneGraph\SceneGraph.cs" />
-    <Compile Include="GenericBackgroundQueueWorker.cs" />
+    <Compile Include="Threading\GenericBackgroundQueueWorker.cs" />
     <Compile Include="SceneGraph\SceneGraphEntity.cs" />
-    <Compile Include="ZippedMriData.cs" />
+    <Compile Include="Data\ZippedMriData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Content\mri.zip">

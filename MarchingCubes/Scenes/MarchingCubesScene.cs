@@ -1,4 +1,6 @@
-﻿using MarchingCubes.Extensions;
+﻿using System.Runtime.InteropServices;
+using MarchingCubes.Data;
+using MarchingCubes.Extensions;
 using MarchingCubes.SceneGraph;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -9,9 +11,8 @@ using Renderer.Brushes;
 using Renderer.Extensions;
 using Renderer.Meshes;
 using Renderer.Pens;
-using System.Runtime.InteropServices;
 
-namespace MarchingCubes
+namespace MarchingCubes.Scenes
 {
 	/// <summary>
 	/// The main scene that will show the result of the marching cube algorithm.
@@ -46,6 +47,9 @@ namespace MarchingCubes
 			_cameraTestMesh = _renderContext.MeshCreator.CreateMesh(desc);
 
 			var mriData = _renderContext.Content.LoadWithAttributeParser<ZippedMriData>("mri.zip");
+
+			var visualizer = new MarchingCubeVisualizer(_renderContext, mriData);
+			AddScheduled(visualizer);
 
 			_firstUpdate = true;
 		}

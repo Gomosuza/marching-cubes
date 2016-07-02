@@ -1,4 +1,4 @@
-﻿namespace MarchingCubes.Content
+﻿namespace MarchingCubes.Data
 {
 	/// <summary>
 	/// Base interface for any dataset that can be loaded.

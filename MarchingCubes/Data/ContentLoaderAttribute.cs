@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace MarchingCubes.Content
+namespace MarchingCubes.Data
 {
 	/// <summary>
 	/// Attribute that must be applied to all data classes that want to be loaded via a custom loader.

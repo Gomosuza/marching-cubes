@@ -1,6 +1,4 @@
-﻿using MarchingCubes.Content;
-
-namespace MarchingCubes
+﻿namespace MarchingCubes.Data
 {
 	/// <summary>
 	/// Container class that reads a .zip file containing mri data.

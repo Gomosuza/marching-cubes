@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace MarchingCubes
+namespace MarchingCubes.Threading
 {
 	/// <summary>
 	/// A generic worker that works on generic <see cref="TData"/>.
