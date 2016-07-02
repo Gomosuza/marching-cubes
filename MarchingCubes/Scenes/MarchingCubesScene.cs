@@ -64,9 +64,8 @@ namespace MarchingCubes.Scenes
 			// for now we just limit 
 			var limit = 170;
 			int lastProgress = 0;
-			const float cellSize = 1f;
 
-			var bbox = new BoundingBox(new Vector3(0, 0, 0), new Vector3(cellSize, cellSize, cellSize));
+			var bbox = new BoundingBox(new Vector3(0, 0, 0), new Vector3(1, 1, 1));
 			var textureScale = Vector2.One;
 			for (int z = 0; z < mriData.ZLength; z++)
 			{
@@ -91,9 +90,9 @@ namespace MarchingCubes.Scenes
 							bbox.Min.X = x;
 							bbox.Min.Y = y;
 							bbox.Min.Z = z;
-							bbox.Max.X = x + cellSize;
-							bbox.Max.Y = z + cellSize;
-							bbox.Max.Z = z + cellSize;
+							bbox.Max.X = x + 1;
+							bbox.Max.Y = z + 1;
+							bbox.Max.Z = z + 1;
 							meshBuilder.AddBox(bbox, textureScale);
 						}
 					}
@@ -101,13 +100,14 @@ namespace MarchingCubes.Scenes
 			}
 			_dataMesh = _renderContext.MeshCreator.CreateMesh(meshBuilder);
 
-			var visualizer = new MarchingCubeVisualizer(_renderContext, mriData);
+			var visualizer = new MarchingCubeVisualizer(_renderContext, mriData, _camera);
 			AddAsync(visualizer);
 
 			_firstUpdate = true;
 			var i = InitializeProgress;
 			i?.Invoke(this, 100);
 			InitializeProgress = null;
+			Initialized = true;
 		}
 
 		public override void Update(GameTime gameTime)
