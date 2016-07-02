@@ -39,7 +39,8 @@ namespace MarchingCubes.Scenes
 
 		public override void Initialize()
 		{
-			_camera = new FirstPersonCamera(_device, new Vector3(0, 0, 50));
+			_camera = new FirstPersonCamera(_device, new Vector3(0, 100, 0));
+			_camera.AddHorizontalRotation(MathHelper.ToRadians(180 - 45));
 			_solidColorBrush = new SolidColorBrush(Color.Green);
 			_pen = new Pen(Color.Black);
 
