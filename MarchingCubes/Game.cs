@@ -1,13 +1,16 @@
-﻿using MarchingCubes.SceneGraph;
+﻿using MarchingCubes.Extensions;
+using MarchingCubes.SceneGraph;
 using MarchingCubes.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Renderer;
 
 namespace MarchingCubes
 {
 	public class Game : Microsoft.Xna.Framework.Game
 	{
 		private readonly GraphicsDeviceManager _graphicsDeviceManager;
+		private IRenderContext _renderContext;
 
 		public Game()
 		{
@@ -17,11 +20,14 @@ namespace MarchingCubes
 		protected override void Initialize()
 		{
 			Content.RootDirectory = "Content";
+			_renderContext = new DefaultRenderContext(_graphicsDeviceManager, Content);
 			var graph = new SceneGraphRoot();
 
-			var scene = new MarchingCubesScene(_graphicsDeviceManager, Content, Window);
-			graph.AddAsync(scene);
+			var scene = new MarchingCubesScene(_renderContext, Window);
+			var progress = graph.AddLoadingScene(_renderContext);
 
+			scene.CaptureInitializeProgress(progress);
+			graph.AddAsync(scene);
 			Components.Add(graph);
 
 			base.Initialize();
@@ -39,6 +45,16 @@ namespace MarchingCubes
 			}
 
 			base.Update(gameTime);
+		}
+
+		protected override void Draw(GameTime gameTime)
+		{
+			_renderContext.Attach();
+			_renderContext.Clear(Color.White);
+
+			base.Draw(gameTime);
+
+			_renderContext.Detach();
 		}
 	}
 }

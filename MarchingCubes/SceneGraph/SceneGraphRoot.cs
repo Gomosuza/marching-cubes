@@ -11,11 +11,11 @@ namespace MarchingCubes.SceneGraph
 	/// </summary>
 	public class SceneGraphRoot : SceneGraphEntity
 	{
-		private readonly GenericBackgroundWorker<ISceneGraphEntity> _sceneGraphObjectInitializer;
+		private readonly GenericBackgroundWorker<SceneGraphEntity> _sceneGraphObjectInitializer;
 
 		public SceneGraphRoot()
 		{
-			_sceneGraphObjectInitializer = new GenericBackgroundWorker<ISceneGraphEntity>(e => e.Initialize());
+			_sceneGraphObjectInitializer = new GenericBackgroundWorker<SceneGraphEntity>(e => e.Initialize());
 			Initialized = true;
 			FindAndSetRootNode();
 		}
@@ -26,7 +26,7 @@ namespace MarchingCubes.SceneGraph
 		/// </summary>
 		/// <param name="child"></param>
 		/// <param name="action"></param>
-		internal void InitializeInBackground(ISceneGraphEntity child, Action<ISceneGraphEntity> action)
+		internal void InitializeInBackground(SceneGraphEntity child, Action<SceneGraphEntity> action)
 		{
 			if (child == null)
 				throw new ArgumentNullException(nameof(child));

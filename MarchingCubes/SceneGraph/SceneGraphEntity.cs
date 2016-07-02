@@ -8,10 +8,10 @@ namespace MarchingCubes.SceneGraph
 	/// <summary>
 	/// Base implementation of a scene graph entity which can contain children.
 	/// </summary>
-	public abstract class SceneGraphEntity : ISceneGraphEntity
+	public abstract class SceneGraphEntity : IGameComponent, IDrawable, IUpdateable
 	{
-		private readonly List<ISceneGraphEntity> _sceneGraphEntities;
-		private readonly List<ISceneGraphEntity> _sceneGraphEntitiesToBeAdded;
+		private readonly List<SceneGraphEntity> _sceneGraphEntities;
+		private readonly List<SceneGraphEntity> _sceneGraphEntitiesToBeAdded;
 		private readonly List<SceneGraphEntity> _sceneGraphEntitiesToBeRemoved;
 
 		private SceneGraphRoot _root;
@@ -22,9 +22,9 @@ namespace MarchingCubes.SceneGraph
 		protected SceneGraphEntity()
 		{
 			Visible = Enabled = true;
-			_sceneGraphEntities = new List<ISceneGraphEntity>();
+			_sceneGraphEntities = new List<SceneGraphEntity>();
 			_sceneGraphEntitiesToBeRemoved = new List<SceneGraphEntity>();
-			_sceneGraphEntitiesToBeAdded = new List<ISceneGraphEntity>();
+			_sceneGraphEntitiesToBeAdded = new List<SceneGraphEntity>();
 		}
 
 		public int DrawOrder => 0;
@@ -45,7 +45,7 @@ namespace MarchingCubes.SceneGraph
 		/// Returns the parent of the current entity.
 		/// This property will be set automatically when the entity is added to a scene graph.
 		/// </summary>
-		public ISceneGraphEntity Parent { get; private set; }
+		public SceneGraphEntity Parent { get; private set; }
 
 		/// <summary>
 		/// Indicates whether this entity was already initialized.
@@ -67,7 +67,7 @@ namespace MarchingCubes.SceneGraph
 		/// </summary>
 		/// <param name="child"></param>
 		/// <param name="parent">If null, will unset the parent, otherwise will set it. Note that a parent can only be set if it has not yet been set before.</param>
-		private static void SetParent(SceneGraphEntity child, ISceneGraphEntity parent)
+		private static void SetParent(SceneGraphEntity child, SceneGraphEntity parent)
 		{
 			if (parent != null && child._parentSet)
 				throw new NotSupportedException("parent has already been set for the provided node. Remove the node from the scene graph that it is attached to and then try to add it again.");
@@ -91,7 +91,7 @@ namespace MarchingCubes.SceneGraph
 		/// </summary>
 		protected void FindAndSetRootNode()
 		{
-			ISceneGraphEntity root = this;
+			SceneGraphEntity root = this;
 			while (!(root is SceneGraphRoot))
 			{
 				root = root.Parent;
@@ -113,7 +113,7 @@ namespace MarchingCubes.SceneGraph
 
 		public virtual void Initialize()
 		{
-
+			Initialized = true;
 		}
 
 		public virtual void Update(GameTime gameTime)
@@ -265,7 +265,7 @@ namespace MarchingCubes.SceneGraph
 		/// <param name="entity"></param>
 		/// <param name="searchEntireTree">Defaults to false. If false will only check the direct childrend of this entity. If true will search the entire tree until all leafes are reached.</param>
 		/// <returns>True if the entity is registered, false otherwise.</returns>
-		public bool IsRegistered(ISceneGraphEntity entity, bool searchEntireTree = false)
+		public bool IsRegistered(SceneGraphEntity entity, bool searchEntireTree = false)
 		{
 			// create a copy of the list as this function might be called on a different thread and each update can change the source collection
 			var entities = _sceneGraphEntities.ToList();

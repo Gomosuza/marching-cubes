@@ -40,8 +40,8 @@
       <HintPath>..\packages\MonoGame.Framework.WindowsDX.3.5.1.1679\lib\net40\MonoGame.Framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Renderer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Renderer.1.0.0\lib\net461\Renderer.dll</HintPath>
+    <Reference Include="Renderer, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Renderer.0.0.1\lib\net461\Renderer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -60,15 +60,19 @@
     <Compile Include="Data\IContentLoader.cs" />
     <Compile Include="Data\ZippedMriDataContentLoader.cs" />
     <Compile Include="Extensions\ContentManagerExtensions.cs" />
+    <Compile Include="Extensions\SceneGraphEntityExtensions.cs" />
+    <Compile Include="Extensions\SceneGraphRootExtensions.cs" />
     <Compile Include="FirstPersonCamera.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="ICamera.cs" />
     <Compile Include="IInputData.cs" />
+    <Compile Include="ProgressReporter.cs" />
+    <Compile Include="SceneGraph\ISceneGraphEntityInitializeProgressReporter.cs" />
+    <Compile Include="Scenes\LoadingProgressScene.cs" />
     <Compile Include="Scenes\MarchingCubesScene.cs" />
     <Compile Include="Scenes\MarchingCubeVisualizer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SceneGraph\ISceneGraphEntity.cs" />
     <Compile Include="SceneGraph\SceneGraphRoot.cs" />
     <Compile Include="Threading\GenericBackgroundQueueWorker.cs" />
     <Compile Include="SceneGraph\SceneGraphEntity.cs" />

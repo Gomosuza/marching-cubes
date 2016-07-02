@@ -2,8 +2,6 @@
 using MarchingCubes.Extensions;
 using MarchingCubes.SceneGraph;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Renderer;
 using Renderer.Brushes;
@@ -11,6 +9,7 @@ using Renderer.Extensions;
 using Renderer.Meshes;
 using Renderer.Pens;
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace MarchingCubes.Scenes
@@ -18,10 +17,9 @@ namespace MarchingCubes.Scenes
 	/// <summary>
 	/// The main scene that will show the result of the marching cube algorithm.
 	/// </summary>
-	public class MarchingCubesScene : SceneGraphEntity
+	public class MarchingCubesScene : SceneGraphEntity, ISceneGraphEntityInitializeProgressReporter
 	{
 		private readonly GameWindow _window;
-		private readonly GraphicsDevice _device;
 		private ICamera _camera;
 		private readonly IRenderContext _renderContext;
 
@@ -30,17 +28,16 @@ namespace MarchingCubes.Scenes
 		private Pen _pen;
 		private bool _firstUpdate;
 
-		public MarchingCubesScene(IGraphicsDeviceService graphicsDeviceService, ContentManager content, GameWindow window)
+		public MarchingCubesScene(IRenderContext renderContext, GameWindow window)
 		{
 			_window = window;
-			_device = graphicsDeviceService.GraphicsDevice;
-			_renderContext = new DefaultRenderContext(graphicsDeviceService, content);
+			_renderContext = renderContext;
 		}
 
 		public override void Initialize()
 		{
-			_camera = new FirstPersonCamera(_device, new Vector3(0, 100, 0));
-			_camera.AddHorizontalRotation(MathHelper.ToRadians(180 - 45));
+			_camera = new FirstPersonCamera(_renderContext.GraphicsDevice, new Vector3(0, 100, 0));
+			_camera.AddHorizontalRotation(MathHelper.ToRadians(90 + 45));
 			_solidColorBrush = new SolidColorBrush(Color.Green);
 			_pen = new Pen(Color.Black);
 
@@ -65,25 +62,45 @@ namespace MarchingCubes.Scenes
 				}
 			}
 
-			// first test
 			// now that we know the min/max, find all values > avg and add cubes for now
-			int avg = (min + max) / 2;
+			// first test, if we just generate a box per datapoint (6 sides * 6 vertices) we get out of memory exception
+			// for now we just limit 
+			var limit = 170;
+			int lastProgress = 0;
 			const float cellSize = 1f;
-			// since we get out of memory exceptions, just do 50% of each direction (=1/8th of the entire dataset)
-			for (int z = 0; z < mriData.ZLength / 2; z++)
+
+			var bbox = new BoundingBox(new Vector3(0, 0, 0), new Vector3(cellSize, cellSize, cellSize));
+			var textureScale = Vector2.One;
+			for (int z = 0; z < mriData.ZLength; z++)
 			{
-				for (int y = 0; y < mriData.YLength / 2; y++)
+				for (int y = 0; y < mriData.YLength; y++)
 				{
-					for (int x = 0; x < mriData.XLength / 2; x++)
+					var progress = (y + z * mriData.YLength) / (float)(mriData.YLength * mriData.ZLength);
+					var newProgress = (int)(progress * 100);
+					if (newProgress >= 100)
+						newProgress = 99; // don't send 100 yet, send it only once at the end of the method
+					if (newProgress != lastProgress)
+					{
+						Debug.WriteLine($"Progress: {newProgress}");
+						var p = InitializeProgress;
+						p?.Invoke(this, newProgress);
+						lastProgress = newProgress;
+					}
+					for (int x = 0; x < mriData.XLength; x++)
 					{
 						var value = mriData[x, y, z];
-						if (value > avg)
+						if (value > limit)
 						{
-							meshBuilder.AddBox(new BoundingBox(new Vector3(x, y, z), new Vector3(x + cellSize, y + cellSize, z + cellSize)), Vector2.One);
+							bbox.Min.X = x;
+							bbox.Min.Y = y;
+							bbox.Min.Z = z;
+							bbox.Max.X = x + cellSize;
+							bbox.Max.Y = z + cellSize;
+							bbox.Max.Z = z + cellSize;
+							meshBuilder.AddBox(bbox, textureScale);
 						}
 					}
 				}
-				Console.WriteLine($"Finished {z}/{mriData.ZLength}");
 			}
 			_dataMesh = _renderContext.MeshCreator.CreateMesh(meshBuilder);
 
@@ -91,6 +108,9 @@ namespace MarchingCubes.Scenes
 			AddAsync(visualizer);
 
 			_firstUpdate = true;
+			var i = InitializeProgress;
+			i?.Invoke(this, 100);
+			InitializeProgress = null;
 		}
 
 		public override void Update(GameTime gameTime)
@@ -147,7 +167,7 @@ namespace MarchingCubes.Scenes
 		{
 			// the monogame implementation (Mouse.SetPosition) doesn't seem to play too nice (sometimes input seems slugish, possibly because mouse events are skipped)
 			var rp = _window.ClientBounds;
-			SetCursorPos(rp.X + _device.Viewport.Width / 2, rp.Y + _device.Viewport.Height / 2);
+			SetCursorPos(rp.X + _renderContext.GraphicsDevice.Viewport.Width / 2, rp.Y + _renderContext.GraphicsDevice.Viewport.Height / 2);
 		}
 
 		[DllImport("User32.dll")]
@@ -155,13 +175,11 @@ namespace MarchingCubes.Scenes
 
 		public override void Draw(GameTime gameTime)
 		{
-			_renderContext.Attach();
-			_renderContext.Clear(Color.White);
-
 			_renderContext.DrawMesh(_dataMesh, Matrix.Identity, _camera.View, _camera.Projection, _solidColorBrush, _pen);
-			_renderContext.Detach();
 
 			base.Draw(gameTime);
 		}
+
+		public event EventHandler<int> InitializeProgress;
 	}
 }
