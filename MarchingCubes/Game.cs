@@ -14,6 +14,7 @@ namespace MarchingCubes
 
 		protected override void Initialize()
 		{
+			Content.RootDirectory = "Content";
 			var graph = new SceneGraph.SceneGraph();
 
 			var scene = new MarchingCubesScene(_graphicsDeviceManager, Content, Window);

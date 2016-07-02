@@ -1,4 +1,5 @@
-﻿using MarchingCubes.SceneGraph;
+﻿using MarchingCubes.Extensions;
+using MarchingCubes.SceneGraph;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -43,6 +44,9 @@ namespace MarchingCubes
 			var desc = new TextureMeshDescriptionBuilder();
 			desc.AddBox(new BoundingBox(-Vector3.One, Vector3.One), Vector2.One);
 			_cameraTestMesh = _renderContext.MeshCreator.CreateMesh(desc);
+
+			var mriData = _renderContext.Content.LoadWithAttributeParser<ZippedMriData>("mri.zip");
+
 			_firstUpdate = true;
 		}
 
