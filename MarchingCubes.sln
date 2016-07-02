@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarchingCubes", "MarchingCubes\MarchingCubes.csproj", "{794B3E20-BC63-4A39-922C-8EE5B3C6CDA7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarchingCubes.Tests", "MarchingCubes.Tests\MarchingCubes.Tests.csproj", "{2B5CA60A-E66A-4B5B-BD7B-208B1E67FD35}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{794B3E20-BC63-4A39-922C-8EE5B3C6CDA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{794B3E20-BC63-4A39-922C-8EE5B3C6CDA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{794B3E20-BC63-4A39-922C-8EE5B3C6CDA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B5CA60A-E66A-4B5B-BD7B-208B1E67FD35}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B5CA60A-E66A-4B5B-BD7B-208B1E67FD35}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B5CA60A-E66A-4B5B-BD7B-208B1E67FD35}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B5CA60A-E66A-4B5B-BD7B-208B1E67FD35}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

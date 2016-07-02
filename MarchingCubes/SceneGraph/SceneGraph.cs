@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MarchingCubes.Threading;
+using System;
 
 namespace MarchingCubes.SceneGraph
 {
@@ -16,6 +17,7 @@ namespace MarchingCubes.SceneGraph
 		{
 			_sceneGraphObjectInitializer = new GenericBackgroundWorker<ISceneGraphEntity>(e => e.Initialize());
 			Initialized = true;
+			FindAndSetRootNode();
 		}
 
 		/// <summary>
@@ -34,23 +36,6 @@ namespace MarchingCubes.SceneGraph
 				action(child);
 			}
 			_sceneGraphObjectInitializer.QueueItem(child, action);
-		}
-
-		/// <summary>
-		/// Adds the entity the scenegraph.
-		/// Note that the item is not added directly but rather the next time update is called.
-		/// Entities that are not yet initialized are also further delayed (until initialize has executed on a background thread).
-		/// Due to this, entities are not guaranteed to be added in same order as method was called (e.g. a not yet initialized entity is added first
-		/// and needs 3s to initialize on the background thread. In the meantime entities that are already Initialized can be added directly).
-		/// To prevent this issue, never mix initialized and non-initialized entities. Both categories are guaranteed to be added in order, UNLESS they are mixed.
-		/// This method is threadsafe.
-		/// </summary>
-		/// <param name="child"></param>
-		public override void AddScheduled(ISceneGraphEntity child)
-		{
-			// explicitely call find root node on a scenegraph, this will set properly set root either to itself or (if it is a nested scene graph) to the parent scene graph
-			FindAndSetRootNode();
-			base.AddScheduled(child);
 		}
 	}
 }

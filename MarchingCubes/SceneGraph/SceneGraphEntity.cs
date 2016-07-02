@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MarchingCubes.SceneGraph
 {
@@ -10,7 +11,8 @@ namespace MarchingCubes.SceneGraph
 	public abstract class SceneGraphEntity : ISceneGraphEntity
 	{
 		private readonly List<ISceneGraphEntity> _sceneGraphEntities;
-		private readonly List<ISceneGraphEntity> _sceneGraphEntitiesToBeAdded, _sceneGraphEntitiesToBeRemoved;
+		private readonly List<ISceneGraphEntity> _sceneGraphEntitiesToBeAdded;
+		private readonly List<SceneGraphEntity> _sceneGraphEntitiesToBeRemoved;
 
 		private SceneGraph _root;
 		private bool _parentSet;
@@ -21,7 +23,7 @@ namespace MarchingCubes.SceneGraph
 		{
 			Visible = Enabled = true;
 			_sceneGraphEntities = new List<ISceneGraphEntity>();
-			_sceneGraphEntitiesToBeRemoved = new List<ISceneGraphEntity>();
+			_sceneGraphEntitiesToBeRemoved = new List<SceneGraphEntity>();
 			_sceneGraphEntitiesToBeAdded = new List<ISceneGraphEntity>();
 		}
 
@@ -36,6 +38,8 @@ namespace MarchingCubes.SceneGraph
 		/// Gets or sets whether the current node is updated or not.
 		/// </summary>
 		public bool Enabled { get; set; }
+
+		public string Name { get; set; }
 
 		/// <summary>
 		/// Returns the parent of the current entity.
@@ -57,31 +61,47 @@ namespace MarchingCubes.SceneGraph
 		public event EventHandler<EventArgs> VisibleChanged;
 
 		/// <summary>
-		/// Sets the parent of the current entity.
+		/// Sets the parent of the child entity.
 		/// Will also navigate up the tree of the parent to find the root.
+		/// If a null parent is provided the function will "unset" the parent.
 		/// </summary>
-		/// <param name="parent"></param>
-		public void SetParent(ISceneGraphEntity parent)
+		/// <param name="child"></param>
+		/// <param name="parent">If null, will unset the parent, otherwise will set it. Note that a parent can only be set if it has not yet been set before.</param>
+		private static void SetParent(SceneGraphEntity child, ISceneGraphEntity parent)
 		{
-			if (_parentSet)
-				throw new NotSupportedException("parent has already been set for the current node.");
+			if (parent != null && child._parentSet)
+				throw new NotSupportedException("parent has already been set for the provided node. Remove the node from the scene graph that it is attached to and then try to add it again.");
 
-			Parent = parent;
-			FindAndSetRootNode();
-			_parentSet = true;
+			if (parent != null)
+			{
+				child.Parent = parent;
+				child.FindAndSetRootNode();
+				child._parentSet = true;
+			}
+			else
+			{
+				child.Parent = null;
+				child._root = null;
+				child._parentSet = false;
+			}
 		}
 
+		/// <summary>
+		/// Looks for the scenegraph this node is attached to by going up the parent chain until a scene graph is found.
+		/// </summary>
 		protected void FindAndSetRootNode()
 		{
 			ISceneGraphEntity root = this;
 			while (!(root is SceneGraph))
 			{
-				root = Parent;
-				while (root is SceneGraph && root.Parent != null)
-				{
-					// keep going, we support nested scene graphs
-					root = root.Parent;
-				}
+				root = root.Parent;
+				// don't look for the ultimate root, just look for the next highest root node
+				// this allows each root to run its own scheduler for all its children
+				//while (root is SceneGraph && root.Parent != null)
+				//{
+				//	// keep going, we support nested scene graphs
+				//	root = root.Parent;
+				//}
 			}
 			if (root == null)
 			{
@@ -140,6 +160,7 @@ namespace MarchingCubes.SceneGraph
 					// no need to check count of list again as no one (except for us) takes items out of this list (and we are in a lock)
 					foreach (var e in _sceneGraphEntitiesToBeRemoved)
 					{
+						SetParent(e, null);
 						_sceneGraphEntities.Remove(e);
 					}
 					_sceneGraphEntitiesToBeRemoved.Clear();
@@ -169,9 +190,9 @@ namespace MarchingCubes.SceneGraph
 		/// This method is threadsafe.
 		/// </summary>
 		/// <param name="child"></param>
-		public virtual void AddScheduled(ISceneGraphEntity child)
+		public virtual void AddScheduled(SceneGraphEntity child)
 		{
-			child.SetParent(this);
+			SetParent(child, this);
 			// note that the child is not added directly but rather to another list, see UpdateCollection method for reason
 			if (child.Initialized)
 			{
@@ -203,10 +224,62 @@ namespace MarchingCubes.SceneGraph
 		/// </summary>
 		/// <param name="child"></param>
 		/// <returns></returns>
-		public void RemoveScheduled(ISceneGraphEntity child)
+		public void RemoveScheduled(SceneGraphEntity child)
 		{
 			// note that the child is not removed directly but rather scheduled in another list, see UpdateCollection method for reason
 			_sceneGraphEntitiesToBeRemoved.Add(child);
+		}
+
+		/// <summary>
+		/// Due to the way the Add/Remove scheduled methods work it is not possible to call entity.RemoveScheduled(a) and entity.AddScheduled(a) within the same update.
+		/// Either one waits at least one update between the 2 calls, or uses this method which will set the child to the new parent.
+		/// This method is threadsafe.
+		/// </summary>
+		/// <param name="newParent"></param>
+		public void ChangeParent(SceneGraphEntity newParent)
+		{
+			if (newParent == null)
+				throw new ArgumentNullException(nameof(newParent), "if you want to remove the entity from a scenegraph, call RemoveScheduled");
+
+			if (!Initialized)
+				throw new NotSupportedException("Changing parent is only possible if the entity was already Initialized");
+
+			// even though initialized is set to true, it will take one more update before the entity is actually added to the scenegraph
+			// assert that said update has occured, otherwise parent is not properly set
+			if (!Parent.IsRegistered(this))
+				throw new NotSupportedException("it takes at least one frame after the entity has been Initialized before the entity is actually registered with the parent.");
+
+			if (Parent == null)
+				throw new NotSupportedException("The current entity must have a parent, otherwise ChangingParent is invalid.");
+
+			// allow override of parent because we are switching parent
+			_parentSet = false;
+			SetParent(this, newParent);
+		}
+
+		/// <summary>
+		/// Call to find out if the specific entity is already registered as a child of the current node.
+		/// Note that the *Scheduled functions will not execute directly and it may take a frame (or two) for an entity to actually be registered.
+		/// This method is threadsafe.
+		/// </summary>
+		/// <param name="entity"></param>
+		/// <param name="searchEntireTree">Defaults to false. If false will only check the direct childrend of this entity. If true will search the entire tree until all leafes are reached.</param>
+		/// <returns>True if the entity is registered, false otherwise.</returns>
+		public bool IsRegistered(ISceneGraphEntity entity, bool searchEntireTree = false)
+		{
+			// create a copy of the list as this function might be called on a different thread and each update can change the source collection
+			var entities = _sceneGraphEntities.ToList();
+			if (entities.Contains(entity))
+				return true;
+			if (searchEntireTree)
+			{
+				foreach (var e in entities)
+				{
+					if (e.IsRegistered(entity, true))
+						return true;
+				}
+			}
+			return false;
 		}
 	}
 }
