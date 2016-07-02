@@ -61,16 +61,21 @@ namespace MarchingCubes
 
 		public void Update(GameTime gameTime)
 		{
-			var mouseState = Mouse.GetState();
 			_camera.Update(gameTime);
 
-			var center = new Point(_renderContext.GraphicsDevice.Viewport.Width / 2, _renderContext.GraphicsDevice.Viewport.Height / 2);
+			HandleInput(gameTime);
+		}
+
+		private void HandleInput(GameTime gameTime)
+		{
+			var mouseState = Mouse.GetState();
+			var center = new Point(_renderContext.GraphicsDevice.Viewport.Width/2, _renderContext.GraphicsDevice.Viewport.Height/2);
 			var diff = mouseState.Position - center;
 			var t = gameTime.GetElapsedSeconds();
-			const float factor = 0.1f;
+			const float factor = 0.4f;
 
-			_camera.AddHorizontalRotation(diff.X * t * factor);
-			_camera.AddVerticalRotation(diff.Y * t * factor);
+			_camera.AddHorizontalRotation(diff.X*t*factor);
+			_camera.AddVerticalRotation(diff.Y*t*factor);
 
 			CenterCursor();
 
