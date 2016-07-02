@@ -21,14 +21,13 @@ namespace MarchingCubes
 		{
 			Content.RootDirectory = "Content";
 			_renderContext = new DefaultRenderContext(_graphicsDeviceManager, Content);
-			var graph = new SceneGraphRoot();
+			var root = new SceneGraphRoot();
 
 			var scene = new MarchingCubesScene(_renderContext, Window);
-			var progress = graph.AddLoadingScene(_renderContext);
 
-			scene.CaptureInitializeProgress(progress);
-			graph.AddAsync(scene);
-			Components.Add(graph);
+			root.AddAsyncWithLoadingScreen(scene, _renderContext);
+
+			Components.Add(root);
 
 			base.Initialize();
 		}

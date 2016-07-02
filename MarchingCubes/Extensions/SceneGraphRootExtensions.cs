@@ -11,29 +11,28 @@ namespace MarchingCubes.Extensions
 	public static class SceneGraphRootExtensions
 	{
 		/// <summary>
-		/// When called will add a temporary loading scene to the <see cref="SceneGraphRoot"/>
-		/// and returns the progress reporter that must be called to animate the progress scene.
-		/// The progress scene will automatically remove itself when the progress reporter is called with progress 100.
+		/// When called will add a temporary loading scene to the <see cref="SceneGraphRoot"/>.
+		/// The progress scene will automatically update remove itself when the Initialize function of the <see cref="scene"/> is finished.
 		/// </summary>
 		/// <param name="root"></param>
+		/// <param name="scene">The actual scene that has heavy loading in its Initialize function.</param>
 		/// <param name="renderContext"></param>
-		/// <returns>The progress reporter that will visualize the progress scene.</returns>
-		public static ProgressReporter AddLoadingScene(this SceneGraphRoot root, IRenderContext renderContext)
+		public static void AddAsyncWithLoadingScreen<TScene>(this SceneGraphRoot root, TScene scene, IRenderContext renderContext) where TScene : SceneGraphEntity, ISceneGraphEntityInitializeProgressReporter
 		{
 			var progressScene = new LoadingProgressScene(renderContext);
-			var progress = new ProgressReporter();
 			EventHandler<int> func = null;
 			func = (s, p) =>
 			{
 				progressScene.SetProgress(p);
+				// remove once completed
 				if (p == 100)
-					((ProgressReporter)s).ProgressReported -= func;
+					scene.InitializeProgress -= func;
 			};
-			progress.ProgressReported += func;
+
+			scene.InitializeProgress += func;
 			// add the progress reporter which is listening in
 			root.AddAsync(progressScene);
-
-			return progress;
+			root.AddAsync(scene);
 		}
 	}
 }

@@ -60,13 +60,11 @@
     <Compile Include="Data\IContentLoader.cs" />
     <Compile Include="Data\ZippedMriDataContentLoader.cs" />
     <Compile Include="Extensions\ContentManagerExtensions.cs" />
-    <Compile Include="Extensions\SceneGraphEntityExtensions.cs" />
     <Compile Include="Extensions\SceneGraphRootExtensions.cs" />
     <Compile Include="FirstPersonCamera.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="ICamera.cs" />
     <Compile Include="IInputData.cs" />
-    <Compile Include="ProgressReporter.cs" />
     <Compile Include="SceneGraph\ISceneGraphEntityInitializeProgressReporter.cs" />
     <Compile Include="Scenes\LoadingProgressScene.cs" />
     <Compile Include="Scenes\MarchingCubesScene.cs" />
