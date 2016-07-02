@@ -57,9 +57,15 @@
     <Compile Include="FirstPersonCamera.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="ICamera.cs" />
+    <Compile Include="IInputData.cs" />
     <Compile Include="MarchingCubesScene.cs" />
+    <Compile Include="MarchingCubeVisualizer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SceneGraph\ISceneGraphEntity.cs" />
+    <Compile Include="SceneGraph\SceneGraph.cs" />
+    <Compile Include="GenericBackgroundQueueWorker.cs" />
+    <Compile Include="SceneGraph\SceneGraphEntity.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

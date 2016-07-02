@@ -14,8 +14,12 @@ namespace MarchingCubes
 
 		protected override void Initialize()
 		{
+			var graph = new SceneGraph.SceneGraph();
+
 			var scene = new MarchingCubesScene(_graphicsDeviceManager, Content, Window);
-			Components.Add(scene);
+			graph.AddScheduled(scene);
+
+			Components.Add(graph);
 
 			base.Initialize();
 		}

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using MarchingCubes.SceneGraph;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -7,12 +8,14 @@ using Renderer.Brushes;
 using Renderer.Extensions;
 using Renderer.Meshes;
 using Renderer.Pens;
-using System;
 using System.Runtime.InteropServices;
 
 namespace MarchingCubes
 {
-	public class MarchingCubesScene : IGameComponent, IUpdateable, IDrawable
+	/// <summary>
+	/// The main scene that will show the result of the marching cube algorithm.
+	/// </summary>
+	public class MarchingCubesScene : SceneGraphEntity
 	{
 		private readonly GameWindow _window;
 		private readonly GraphicsDevice _device;
@@ -22,6 +25,7 @@ namespace MarchingCubes
 		private Mesh _cameraTestMesh;
 		private Brush _solidColorBrush;
 		private Pen _pen;
+		private bool _firstUpdate;
 
 		public MarchingCubesScene(IGraphicsDeviceService graphicsDeviceService, ContentManager content, GameWindow window)
 		{
@@ -30,23 +34,7 @@ namespace MarchingCubes
 			_renderContext = new DefaultRenderContext(graphicsDeviceService, content);
 		}
 
-		public int DrawOrder => 0;
-
-		public bool Visible => true;
-
-		public bool Enabled => true;
-
-		public int UpdateOrder => 0;
-
-		public event EventHandler<EventArgs> EnabledChanged;
-
-		public event EventHandler<EventArgs> UpdateOrderChanged;
-
-		public event EventHandler<EventArgs> DrawOrderChanged;
-
-		public event EventHandler<EventArgs> VisibleChanged;
-
-		public void Initialize()
+		public override void Initialize()
 		{
 			_camera = new FirstPersonCamera(_device, new Vector3(0, 0, 50));
 			_solidColorBrush = new SolidColorBrush(Color.Green);
@@ -55,27 +43,34 @@ namespace MarchingCubes
 			var desc = new TextureMeshDescriptionBuilder();
 			desc.AddBox(new BoundingBox(-Vector3.One, Vector3.One), Vector2.One);
 			_cameraTestMesh = _renderContext.MeshCreator.CreateMesh(desc);
-
-			CenterCursor();
+			_firstUpdate = true;
 		}
 
-		public void Update(GameTime gameTime)
+		public override void Update(GameTime gameTime)
 		{
 			_camera.Update(gameTime);
 
 			HandleInput(gameTime);
+			base.Update(gameTime);
 		}
 
 		private void HandleInput(GameTime gameTime)
 		{
+			if (_firstUpdate)
+			{
+				_firstUpdate = false;
+				CenterCursor();
+				return;
+			}
 			var mouseState = Mouse.GetState();
-			var center = new Point(_renderContext.GraphicsDevice.Viewport.Width/2, _renderContext.GraphicsDevice.Viewport.Height/2);
+			var center = new Point(_renderContext.GraphicsDevice.Viewport.Width / 2, _renderContext.GraphicsDevice.Viewport.Height / 2);
 			var diff = mouseState.Position - center;
+
 			var t = gameTime.GetElapsedSeconds();
 			const float factor = 0.4f;
 
-			_camera.AddHorizontalRotation(diff.X*t*factor);
-			_camera.AddVerticalRotation(diff.Y*t*factor);
+			_camera.AddHorizontalRotation(diff.X * t * factor);
+			_camera.AddVerticalRotation(diff.Y * t * factor);
 
 			CenterCursor();
 
@@ -111,13 +106,15 @@ namespace MarchingCubes
 		[DllImport("User32.dll")]
 		private static extern bool SetCursorPos(int x, int y);
 
-		public void Draw(GameTime gameTime)
+		public override void Draw(GameTime gameTime)
 		{
 			_renderContext.Attach();
 			_renderContext.Clear(Color.White);
 
 			_renderContext.DrawMesh(_cameraTestMesh, Matrix.Identity, _camera.View, _camera.Projection, _solidColorBrush, _pen);
 			_renderContext.Detach();
+
+			base.Draw(gameTime);
 		}
 	}
 }
