@@ -10,16 +10,37 @@
 	[ContentLoader(typeof(ZippedMriDataContentLoader))]
 	public class ZippedMriData : IInputData
 	{
+		private readonly byte[] _buffer;
+
 		/// <summary>
 		/// Creates a new instance holding the provided data.
 		/// </summary>
 		/// <param name="buffer"></param>
+		/// <param name="xLength"></param>
+		/// <param name="yLength"></param>
+		/// <param name="zLength"></param>
+		public ZippedMriData(byte[] buffer, int xLength, int yLength, int zLength)
+		{
+			_buffer = buffer;
+			XLength = xLength;
+			YLength = yLength;
+			ZLength = zLength;
+		}
+
+		public int XLength { get; }
+
+		public int YLength { get; }
+
+		public int ZLength { get; }
+
+		/// <summary>
+		/// Direct accessor to the value at the provided index.
+		/// y * sizeX
+		/// </summary>
 		/// <param name="x"></param>
 		/// <param name="y"></param>
 		/// <param name="z"></param>
-		public ZippedMriData(byte[] buffer, int x, int y, int z)
-		{
-
-		}
+		/// <returns></returns>
+		public int this[int x, int y, int z] => _buffer[x + XLength * (y + z * YLength)];
 	}
 }

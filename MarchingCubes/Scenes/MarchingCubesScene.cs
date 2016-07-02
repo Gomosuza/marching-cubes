@@ -10,6 +10,7 @@ using Renderer.Brushes;
 using Renderer.Extensions;
 using Renderer.Meshes;
 using Renderer.Pens;
+using System;
 using System.Runtime.InteropServices;
 
 namespace MarchingCubes.Scenes
@@ -24,7 +25,7 @@ namespace MarchingCubes.Scenes
 		private ICamera _camera;
 		private readonly IRenderContext _renderContext;
 
-		private Mesh _cameraTestMesh;
+		private Mesh _dataMesh;
 		private Brush _solidColorBrush;
 		private Pen _pen;
 		private bool _firstUpdate;
@@ -42,11 +43,48 @@ namespace MarchingCubes.Scenes
 			_solidColorBrush = new SolidColorBrush(Color.Green);
 			_pen = new Pen(Color.Black);
 
-			var desc = new TextureMeshDescriptionBuilder();
-			desc.AddBox(new BoundingBox(-Vector3.One, Vector3.One), Vector2.One);
-			_cameraTestMesh = _renderContext.MeshCreator.CreateMesh(desc);
 
 			var mriData = _renderContext.Content.LoadWithAttributeParser<ZippedMriData>("mri.zip");
+
+			var meshBuilder = new TextureMeshDescriptionBuilder();
+
+			int min = int.MaxValue, max = int.MinValue;
+			for (int z = 0; z < mriData.ZLength; z++)
+			{
+				for (int y = 0; y < mriData.YLength; y++)
+				{
+					for (int x = 0; x < mriData.XLength; x++)
+					{
+						var value = mriData[x, y, z];
+						if (value > max)
+							max = value;
+						if (value < min)
+							min = value;
+					}
+				}
+			}
+
+			// first test
+			// now that we know the min/max, find all values > avg and add cubes for now
+			int avg = (min + max) / 2;
+			const float cellSize = 1f;
+			// since we get out of memory exceptions, just do 50% of each direction (=1/8th of the entire dataset)
+			for (int z = 0; z < mriData.ZLength / 2; z++)
+			{
+				for (int y = 0; y < mriData.YLength / 2; y++)
+				{
+					for (int x = 0; x < mriData.XLength / 2; x++)
+					{
+						var value = mriData[x, y, z];
+						if (value > avg)
+						{
+							meshBuilder.AddBox(new BoundingBox(new Vector3(x, y, z), new Vector3(x + cellSize, y + cellSize, z + cellSize)), Vector2.One);
+						}
+					}
+				}
+				Console.WriteLine($"Finished {z}/{mriData.ZLength}");
+			}
+			_dataMesh = _renderContext.MeshCreator.CreateMesh(meshBuilder);
 
 			var visualizer = new MarchingCubeVisualizer(_renderContext, mriData);
 			AddAsync(visualizer);
@@ -119,7 +157,7 @@ namespace MarchingCubes.Scenes
 			_renderContext.Attach();
 			_renderContext.Clear(Color.White);
 
-			_renderContext.DrawMesh(_cameraTestMesh, Matrix.Identity, _camera.View, _camera.Projection, _solidColorBrush, _pen);
+			_renderContext.DrawMesh(_dataMesh, Matrix.Identity, _camera.View, _camera.Projection, _solidColorBrush, _pen);
 			_renderContext.Detach();
 
 			base.Draw(gameTime);
