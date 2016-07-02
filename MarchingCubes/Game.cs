@@ -19,7 +19,7 @@ namespace MarchingCubes
 			var graph = new SceneGraph.SceneGraph();
 
 			var scene = new MarchingCubesScene(_graphicsDeviceManager, Content, Window);
-			graph.AddScheduled(scene);
+			graph.AddAsync(scene);
 
 			Components.Add(graph);
 

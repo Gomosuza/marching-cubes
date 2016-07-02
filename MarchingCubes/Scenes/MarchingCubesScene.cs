@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using MarchingCubes.Data;
+﻿using MarchingCubes.Data;
 using MarchingCubes.Extensions;
 using MarchingCubes.SceneGraph;
 using Microsoft.Xna.Framework;
@@ -11,6 +10,7 @@ using Renderer.Brushes;
 using Renderer.Extensions;
 using Renderer.Meshes;
 using Renderer.Pens;
+using System.Runtime.InteropServices;
 
 namespace MarchingCubes.Scenes
 {
@@ -49,7 +49,7 @@ namespace MarchingCubes.Scenes
 			var mriData = _renderContext.Content.LoadWithAttributeParser<ZippedMriData>("mri.zip");
 
 			var visualizer = new MarchingCubeVisualizer(_renderContext, mriData);
-			AddScheduled(visualizer);
+			AddAsync(visualizer);
 
 			_firstUpdate = true;
 		}

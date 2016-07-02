@@ -190,7 +190,7 @@ namespace MarchingCubes.SceneGraph
 		/// This method is threadsafe.
 		/// </summary>
 		/// <param name="child"></param>
-		public virtual void AddScheduled(SceneGraphEntity child)
+		public virtual void AddAsync(SceneGraphEntity child)
 		{
 			SetParent(child, this);
 			// note that the child is not added directly but rather to another list, see UpdateCollection method for reason
@@ -224,7 +224,7 @@ namespace MarchingCubes.SceneGraph
 		/// </summary>
 		/// <param name="child"></param>
 		/// <returns></returns>
-		public void RemoveScheduled(SceneGraphEntity child)
+		public void RemoveAsync(SceneGraphEntity child)
 		{
 			// note that the child is not removed directly but rather scheduled in another list, see UpdateCollection method for reason
 			_sceneGraphEntitiesToBeRemoved.Add(child);

@@ -39,14 +39,14 @@ namespace MarchingCubes.Tests
 			node.Initialize();
 			node.Initialized.Should().BeTrue();
 
-			root.AddScheduled(node);
+			root.AddAsync(node);
 			node.Parent.Should().Be(root, "because add scheduled added the node right away as it was already initialized");
 
 			const int sleep = 1000;
 			var lazyNode = new MockEntity(sleep);
 			lazyNode.Initialized.Should().BeFalse();
 			var before = DateTime.Now;
-			root.AddScheduled(lazyNode);
+			root.AddAsync(lazyNode);
 			lazyNode.Initialized.Should().BeFalse();
 			lazyNode.Parent.Should().Be(root);
 			// wait longer than init would take
@@ -66,7 +66,7 @@ namespace MarchingCubes.Tests
 			root1.Initialize();
 			root2.Initialize();
 
-			root1.AddScheduled(root2);
+			root1.AddAsync(root2);
 
 			root2.Parent.Should().Be(root1);
 		}
@@ -80,17 +80,17 @@ namespace MarchingCubes.Tests
 			var root1 = new SceneGraph.SceneGraph();
 			var root2 = new SceneGraph.SceneGraph();
 
-			root1.AddScheduled(entity);
+			root1.AddAsync(entity);
 			entity.Parent.Should().Be(root1);
 
-			new Action(() => root1.AddScheduled(entity)).ShouldThrow<NotSupportedException>();
+			new Action(() => root1.AddAsync(entity)).ShouldThrow<NotSupportedException>();
 
-			root1.RemoveScheduled(entity);
+			root1.RemoveAsync(entity);
 			entity.Parent.Should().Be(root1, "because RemoveScheduled will only be called in the next update");
 			root1.Update(new GameTime());
 			entity.Parent.Should().BeNull("because update now removed the entity from the scene");
 
-			root2.AddScheduled(entity);
+			root2.AddAsync(entity);
 			entity.Parent.Should().Be(root2);
 
 			root1.IsRegistered(entity).Should().BeFalse("because it will only be registered in the update call");
