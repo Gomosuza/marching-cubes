@@ -69,7 +69,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SceneGraph\ISceneGraphEntity.cs" />
-    <Compile Include="SceneGraph\SceneGraph.cs" />
+    <Compile Include="SceneGraph\SceneGraphRoot.cs" />
     <Compile Include="Threading\GenericBackgroundQueueWorker.cs" />
     <Compile Include="SceneGraph\SceneGraphEntity.cs" />
     <Compile Include="Data\ZippedMriData.cs" />

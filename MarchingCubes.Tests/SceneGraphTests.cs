@@ -30,7 +30,7 @@ namespace MarchingCubes.Tests
 		[Test]
 		public void ChildParentRelationBetweenEntityAndGraphShouldExist()
 		{
-			var root = new SceneGraph.SceneGraph();
+			var root = new SceneGraphRoot();
 			root.Parent.Should().BeNull();
 			var node = new MockEntity(0);
 
@@ -61,8 +61,8 @@ namespace MarchingCubes.Tests
 		[Test]
 		public void TestSceneGraphNesting()
 		{
-			var root1 = new SceneGraph.SceneGraph();
-			var root2 = new SceneGraph.SceneGraph();
+			var root1 = new SceneGraphRoot();
+			var root2 = new SceneGraphRoot();
 			root1.Initialize();
 			root2.Initialize();
 
@@ -77,8 +77,8 @@ namespace MarchingCubes.Tests
 			var entity = new MockEntity(0);
 			entity.Initialize();
 
-			var root1 = new SceneGraph.SceneGraph();
-			var root2 = new SceneGraph.SceneGraph();
+			var root1 = new SceneGraphRoot();
+			var root2 = new SceneGraphRoot();
 
 			root1.AddAsync(entity);
 			entity.Parent.Should().Be(root1);

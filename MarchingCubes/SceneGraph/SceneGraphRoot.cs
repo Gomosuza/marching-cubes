@@ -9,11 +9,11 @@ namespace MarchingCubes.SceneGraph
 	/// The scene graph is itself a <see cref="SceneGraphEntity"/> and can be added to other scene graphs.
 	/// Circular references are not checked and will result in a <see cref="StackOverflowException"/>.
 	/// </summary>
-	public class SceneGraph : SceneGraphEntity
+	public class SceneGraphRoot : SceneGraphEntity
 	{
 		private readonly GenericBackgroundWorker<ISceneGraphEntity> _sceneGraphObjectInitializer;
 
-		public SceneGraph()
+		public SceneGraphRoot()
 		{
 			_sceneGraphObjectInitializer = new GenericBackgroundWorker<ISceneGraphEntity>(e => e.Initialize());
 			Initialized = true;

@@ -14,7 +14,7 @@ namespace MarchingCubes.SceneGraph
 		private readonly List<ISceneGraphEntity> _sceneGraphEntitiesToBeAdded;
 		private readonly List<SceneGraphEntity> _sceneGraphEntitiesToBeRemoved;
 
-		private SceneGraph _root;
+		private SceneGraphRoot _root;
 		private bool _parentSet;
 
 		public int UpdateOrder => 0;
@@ -92,7 +92,7 @@ namespace MarchingCubes.SceneGraph
 		protected void FindAndSetRootNode()
 		{
 			ISceneGraphEntity root = this;
-			while (!(root is SceneGraph))
+			while (!(root is SceneGraphRoot))
 			{
 				root = root.Parent;
 				// don't look for the ultimate root, just look for the next highest root node
@@ -108,7 +108,7 @@ namespace MarchingCubes.SceneGraph
 				throw new NotSupportedException("Could not find the root of the provided parent.");
 			}
 
-			_root = (SceneGraph)root;
+			_root = (SceneGraphRoot)root;
 		}
 
 		public virtual void Initialize()

@@ -1,4 +1,5 @@
-﻿using MarchingCubes.Scenes;
+﻿using MarchingCubes.SceneGraph;
+using MarchingCubes.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -16,7 +17,7 @@ namespace MarchingCubes
 		protected override void Initialize()
 		{
 			Content.RootDirectory = "Content";
-			var graph = new SceneGraph.SceneGraph();
+			var graph = new SceneGraphRoot();
 
 			var scene = new MarchingCubesScene(_graphicsDeviceManager, Content, Window);
 			graph.AddAsync(scene);
