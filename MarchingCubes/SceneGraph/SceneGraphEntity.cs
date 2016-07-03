@@ -331,5 +331,23 @@ namespace MarchingCubes.SceneGraph
 			}
 			return false;
 		}
+
+		/// <summary>
+		/// Gets all direct children of the current scenegraph node.
+		/// </summary>
+		/// <param name="thisNodeOnly">Defaults to true. If true will only return the direct children. If false, will also return all children of children.</param>
+		/// <returns></returns>
+		public IReadOnlyList<SceneGraphEntity> GetChildScenes(bool thisNodeOnly = true)
+		{
+			if (thisNodeOnly)
+				return _sceneGraphEntities.ToList();
+
+			var current = _sceneGraphEntities.ToList();
+			foreach (var e in current)
+			{
+				current.AddRange(e.GetChildScenes(false));
+			}
+			return current;
+		}
 	}
 }

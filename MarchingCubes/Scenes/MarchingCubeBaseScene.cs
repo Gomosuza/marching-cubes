@@ -1,7 +1,15 @@
 ﻿using MarchingCubes.Data;
 using MarchingCubes.Extensions;
+using MarchingCubes.RendererExtensions;
 using MarchingCubes.SceneGraph;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Renderer;
+using Renderer.Brushes;
+using Renderer.Extensions;
+using Renderer.Meshes;
+using Renderer.Pens;
 
 namespace MarchingCubes.Scenes
 {
@@ -11,6 +19,10 @@ namespace MarchingCubes.Scenes
 	public abstract class MarchingCubeBaseScene : SceneGraphEntity
 	{
 		private readonly string _dataPath;
+		private Mesh _mesh;
+		private Pen _pen;
+		private ICamera _camera;
+		private bool _firstUpdate;
 
 		/// <summary>
 		/// The input data that was loaded from the file.
@@ -39,6 +51,99 @@ namespace MarchingCubes.Scenes
 		public override void Initialize()
 		{
 			InputData = RenderContext.Content.LoadWithAttributeParser<ZippedMriData>(_dataPath);
+
+			_camera = new FirstPersonCamera(RenderContext.GraphicsDevice, new Vector3(0, 100, 0));
+			_camera.AddHorizontalRotation(MathHelper.ToRadians(90 + 45));
+
+			var builder = new LineMeshDescriptionBuilder();
+			var bbox = new BoundingBox(Vector3.Zero, new Vector3(InputData.XLength, InputData.YLength, InputData.ZLength));
+			builder.AddBox(bbox, Color.Black);
+			_mesh = RenderContext.MeshCreator.CreateMesh(builder);
+
+			_pen = new VertexColorPen(CullMode.None);
+			_firstUpdate = true;
+		}
+
+		/// <summary>
+		/// Updates the marching cubes scene.
+		/// </summary>
+		/// <param name="gameTime"></param>
+		public override void Update(GameTime gameTime)
+		{
+			_camera.Update(gameTime);
+
+			HandleInput(gameTime);
+			base.Update(gameTime);
+		}
+
+		private void HandleInput(GameTime gameTime)
+		{
+			if (_firstUpdate)
+			{
+				_firstUpdate = false;
+				CenterCursor();
+			}
+			var mouseState = Mouse.GetState();
+			var center = new Point(RenderContext.GraphicsDevice.Viewport.Width / 2, RenderContext.GraphicsDevice.Viewport.Height / 2);
+			var diff = mouseState.Position - center;
+
+			var t = gameTime.GetElapsedSeconds();
+			const float factor = 0.4f;
+
+			_camera.AddHorizontalRotation(diff.X * t * factor);
+			_camera.AddVerticalRotation(diff.Y * t * factor);
+
+			CenterCursor();
+
+			var keyboardState = Keyboard.GetState();
+
+			var movement = Vector3.Zero;
+			if (keyboardState.IsKeyDown(Keys.W))
+			{
+				movement += -Vector3.UnitZ;
+			}
+			if (keyboardState.IsKeyDown(Keys.A))
+			{
+				movement += -Vector3.UnitX;
+			}
+			if (keyboardState.IsKeyDown(Keys.S))
+			{
+				movement += Vector3.UnitZ;
+			}
+			if (keyboardState.IsKeyDown(Keys.D))
+			{
+				movement += Vector3.UnitX;
+			}
+			if (keyboardState.IsKeyDown(Keys.LeftShift))
+				movement *= 4f;
+			if (keyboardState.IsKeyDown(Keys.LeftControl))
+				movement /= 4f;
+			_camera.Move(movement);
+		}
+
+		private void CenterCursor()
+		{
+			Mouse.SetPosition(RenderContext.GraphicsDevice.Viewport.Width / 2, RenderContext.GraphicsDevice.Viewport.Height / 2);
+		}
+
+		/// <summary>
+		/// Draws the base scene which includes the bounding box around the entire loaded dataset.
+		/// </summary>
+		/// <param name="gameTime"></param>
+		public override void Draw(GameTime gameTime)
+		{
+			DrawMesh(_mesh, null, _pen);
+		}
+
+		/// <summary>
+		/// Draws a mesh with the provided brush and pen using the current camera.
+		/// </summary>
+		/// <param name="mesh"></param>
+		/// <param name="brush"></param>
+		/// <param name="pen"></param>
+		protected void DrawMesh(Mesh mesh, Brush brush, Pen pen)
+		{
+			RenderContext.DrawMesh(mesh, Matrix.Identity, _camera.View, _camera.Projection, brush, pen);
 		}
 	}
 }

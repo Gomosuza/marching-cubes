@@ -16,7 +16,7 @@ namespace MarchingCubes.SceneGraph
 		private readonly GenericBackgroundWorker<SceneGraphEntity> _sceneGraphObjectInitializer;
 
 		/// <summary>
-		/// Creates a new scenegrapgh root.
+		/// Creates a new scenegraph root.
 		/// </summary>
 		public SceneGraphRoot()
 		{

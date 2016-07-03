@@ -25,6 +25,7 @@ namespace MarchingCubes
 		private int _assetIndex;
 		private bool _reloadScene;
 		private int _sceneType;
+		private KeyboardState _lastKeyboardState;
 
 		/// <summary>
 		/// Default ctor.
@@ -40,15 +41,18 @@ namespace MarchingCubes
 		protected override void Initialize()
 		{
 			Content.RootDirectory = "Content";
+
+			_availableAssets = Directory.GetFiles(Content.RootDirectory, "*.zip").Select(a => a.Substring(Content.RootDirectory.Length + 1)).ToArray();
+			_selectedAsset = _availableAssets[0];
+
 			_renderContext = new DefaultRenderContext(_graphicsDeviceManager, Content);
 
 			Components.Add(new SceneGraphRoot());
-			_availableAssets = Directory.GetFiles(Content.RootDirectory, "*.zip").Select(a => a.Substring(Content.RootDirectory.Length + 1)).ToArray();
-			_selectedAsset = _availableAssets[0];
-			UpdateTitle();
-
 			_reloadScene = true;
 			_sceneType = 2;
+
+			UpdateTitle();
+
 			base.Initialize();
 		}
 
@@ -84,35 +88,51 @@ namespace MarchingCubes
 				};
 				MessageBox.Show(string.Join(Environment.NewLine, message));
 			}
-			else if (kb.IsKeyDown(Keys.F5) || (_sceneType == 1 && _reloadScene))
+			var root = Components.Get<SceneGraphRoot>();
+			var children = root.GetChildScenes();
+			// we only ever have once scene, check that it is in the node. if not, we don't allow switching yet (otherwise we could get 2 scenes loading at the same time
+			// or if we just started the app, in which case no scene is rendered
+			var justStartedApplication = children.Count == 0;
+			var currentNode = children.OfType<MarchingCubeBaseScene>().FirstOrDefault();
+			if (currentNode != null || justStartedApplication)
 			{
-				_sceneType = 1;
-				_reloadScene = false;
+				if ((kb.IsKeyDown(Keys.F5) && _lastKeyboardState.IsKeyUp(Keys.F5)) || (_sceneType == 1 && _reloadScene))
+				{
+					_sceneType = 1;
+					_reloadScene = false;
 
-				var root = Components.Get<SceneGraphRoot>();
-				var scene = new MarchingCubeVisualizer(_renderContext, _selectedAsset);
-				root.AddAsync(scene);
+					var scene = new MarchingCubeVisualizer(_renderContext, _selectedAsset);
+					root.AddAsync(scene);
+
+					// remove the old scene so we don't render 2 at a time
+					if (currentNode != null)
+						root.RemoveAsync(currentNode);
+				}
+				else if ((kb.IsKeyDown(Keys.F6) && _lastKeyboardState.IsKeyUp(Keys.F6)) || (_sceneType == 2 && _reloadScene))
+				{
+					_sceneType = 2;
+					_reloadScene = false;
+
+					var scene = new MarchingCubesScene(_renderContext, _selectedAsset);
+					root.AddAsyncWithLoadingScreen(scene, _renderContext);
+
+					// remove the old scene so we don't render 2 at a time
+					if (currentNode != null)
+						root.RemoveAsync(currentNode);
+				}
+				if (kb.IsKeyDown(Keys.F7) && _lastKeyboardState.IsKeyUp(Keys.F7))
+				{
+					_assetIndex = (_assetIndex + 1) % _availableAssets.Length;
+					_selectedAsset = _availableAssets[_assetIndex];
+					UpdateTitle();
+					_reloadScene = true;
+
+					// remove the old scene so we don't render 2 at a time
+					if (currentNode != null)
+						root.RemoveAsync(currentNode);
+				}
 			}
-			else if (kb.IsKeyDown(Keys.F6) || (_sceneType == 2 && _reloadScene))
-			{
-				_sceneType = 2;
-				_reloadScene = false;
-
-				var root = Components.Get<SceneGraphRoot>();
-				var scene = new MarchingCubesScene(_renderContext, _selectedAsset);
-				root.AddAsyncWithLoadingScreen(scene, _renderContext);
-			}
-			if (kb.IsKeyDown(Keys.F7))
-			{
-				_assetIndex = (_assetIndex + 1) % _availableAssets.Length;
-				_selectedAsset = _availableAssets[_assetIndex];
-
-
-				var root = Components.Get<SceneGraphRoot>();
-
-				_reloadScene = true;
-			}
-
+			_lastKeyboardState = kb;
 			base.Update(gameTime);
 		}
 
