@@ -25,6 +25,27 @@
 			XLength = xLength;
 			YLength = yLength;
 			ZLength = zLength;
+
+			int min = int.MaxValue, max = int.MinValue, points = 0;
+			for (int z = 0; z < ZLength; z++)
+			{
+				for (int y = 0; y < YLength; y++)
+				{
+					for (int x = 0; x < XLength; x++)
+					{
+						var value = this[x, y, z];
+						if (value > 0)
+							points++;
+						if (value > max)
+							max = value;
+						if (value < min)
+							min = value;
+					}
+				}
+			}
+			MinValue = min;
+			MaxValue = max;
+			DataPoints = points;
 		}
 
 		/// <summary>
@@ -51,5 +72,21 @@
 		/// <param name="z"></param>
 		/// <returns></returns>
 		public int this[int x, int y, int z] => _buffer[x + XLength * (y + z * YLength)];
+
+		/// <summary>
+		/// Returns the minimum value of the entire data set.
+		/// This is usually 0 as at least one datapoint will be empty.
+		/// </summary>
+		public int MinValue { get; }
+
+		/// <summary>
+		/// Returns the maximum value found within the entire data set.
+		/// </summary>
+		public int MaxValue { get; }
+
+		/// <summary>
+		/// Returns the number of data points found that where greater than 0.
+		/// </summary>
+		public int DataPoints { get; }
 	}
 }

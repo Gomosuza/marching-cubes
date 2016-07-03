@@ -28,5 +28,21 @@
 		/// <param name="z"></param>
 		/// <returns></returns>
 		int this[int x, int y, int z] { get; }
+
+		/// <summary>
+		/// Returns the minimum value of the entire data set.
+		/// This is usually 0 as at least one datapoint will be empty.
+		/// </summary>
+		int MinValue { get; }
+
+		/// <summary>
+		/// Returns the maximum value found within the entire data set.
+		/// </summary>
+		int MaxValue { get; }
+
+		/// <summary>
+		/// Returns the number of data points found that where greater than 0.
+		/// </summary>
+		int DataPoints { get; }
 	}
 }

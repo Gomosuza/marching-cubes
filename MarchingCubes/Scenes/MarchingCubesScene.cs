@@ -53,26 +53,9 @@ namespace MarchingCubes.Scenes
 			_solidColorBrush = new SolidColorBrush(Color.Green);
 			_pen = new SolidColorPen(Color.Black);
 
-
 			var mriData = _renderContext.Content.LoadWithAttributeParser<ZippedMriData>(_dataPath);
 
 			var meshBuilder = new TextureMeshDescriptionBuilder();
-
-			int min = int.MaxValue, max = int.MinValue;
-			for (int z = 0; z < mriData.ZLength; z++)
-			{
-				for (int y = 0; y < mriData.YLength; y++)
-				{
-					for (int x = 0; x < mriData.XLength; x++)
-					{
-						var value = mriData[x, y, z];
-						if (value > max)
-							max = value;
-						if (value < min)
-							min = value;
-					}
-				}
-			}
 
 			// now that we know the min/max, find all values > avg and add cubes for now
 			// first test, if we just generate a box per datapoint (6 sides * 6 vertices) we get out of memory exception
