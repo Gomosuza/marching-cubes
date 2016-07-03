@@ -40,8 +40,8 @@
       <HintPath>..\packages\MonoGame.Framework.WindowsDX.3.5.1.1679\lib\net40\MonoGame.Framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Renderer, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Renderer.0.0.1\lib\net461\Renderer.dll</HintPath>
+    <Reference Include="Renderer, Version=0.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Renderer.0.0.2\lib\net461\Renderer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -66,7 +66,6 @@
     <Compile Include="ICamera.cs" />
     <Compile Include="IInputData.cs" />
     <Compile Include="RendererExtensions\LineMeshDescriptionBuilder.cs" />
-    <Compile Include="RendererExtensions\WireFramePen.cs" />
     <Compile Include="SceneGraph\ISceneGraphEntityInitializeProgressReporter.cs" />
     <Compile Include="Scenes\LoadingProgressScene.cs" />
     <Compile Include="Scenes\MarchingCubesScene.cs" />

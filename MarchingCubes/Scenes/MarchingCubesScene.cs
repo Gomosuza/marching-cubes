@@ -36,7 +36,7 @@ namespace MarchingCubes.Scenes
 			_camera = new FirstPersonCamera(_renderContext.GraphicsDevice, new Vector3(0, 100, 0));
 			_camera.AddHorizontalRotation(MathHelper.ToRadians(90 + 45));
 			_solidColorBrush = new SolidColorBrush(Color.Green);
-			_pen = new Pen(Color.Black);
+			_pen = new SolidColorPen(Color.Black);
 
 
 			var mriData = _renderContext.Content.LoadWithAttributeParser<ZippedMriData>("mri.zip");

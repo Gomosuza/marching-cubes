@@ -1,6 +1,7 @@
 ﻿using MarchingCubes.RendererExtensions;
 using MarchingCubes.SceneGraph;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Renderer;
 using Renderer.Meshes;
 using Renderer.Pens;
@@ -32,7 +33,7 @@ namespace MarchingCubes.Scenes
 			builder.AddBox(bbox, Color.Black);
 			_mesh = _renderContext.MeshCreator.CreateMesh(builder);
 
-			_pen = new WireFramePen();
+			_pen = new VertexColorPen(CullMode.None);
 
 			Initialized = true;
 		}
