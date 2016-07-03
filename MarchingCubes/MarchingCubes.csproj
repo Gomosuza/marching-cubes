@@ -67,7 +67,9 @@
     <Compile Include="Game.cs" />
     <Compile Include="ICamera.cs" />
     <Compile Include="IInputData.cs" />
+    <Compile Include="MarchingCubesAlgorithm.cs" />
     <Compile Include="RendererExtensions\LineMeshDescriptionBuilder.cs" />
+    <Compile Include="RendererExtensions\TriangleMeshDescriptionBuilder.cs" />
     <Compile Include="SceneGraph\ISceneGraphEntityInitializeProgressReporter.cs" />
     <Compile Include="Scenes\LoadingProgressScene.cs" />
     <Compile Include="Scenes\MarchingCubesScene.cs" />

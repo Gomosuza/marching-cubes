@@ -1,5 +1,6 @@
 ﻿using MarchingCubes.Data;
 using MarchingCubes.Extensions;
+using MarchingCubes.RendererExtensions;
 using MarchingCubes.SceneGraph;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -55,21 +56,24 @@ namespace MarchingCubes.Scenes
 
 			var mriData = _renderContext.Content.LoadWithAttributeParser<ZippedMriData>(_dataPath);
 
-			var meshBuilder = new TextureMeshDescriptionBuilder();
-
-			// now that we know the min/max, find all values > avg and add cubes for now
-			// first test, if we just generate a box per datapoint (6 sides * 6 vertices) we get out of memory exception
-			// for now we just limit 
-			var limit = 170;
+			var triangleBuilder = new TriangleMeshDescriptionBuilder();
+			// isolevel defines which points are inside/outside the structure
+			var isolevel = 128;
 			int lastProgress = 0;
 
-			var bbox = new BoundingBox(new Vector3(0, 0, 0), new Vector3(1, 1, 1));
-			var textureScale = Vector2.One;
-			for (int z = 0; z < mriData.ZLength; z++)
+			// for each point we will at all 8 points forming a cube, we will simply take the index + 1 in each direction, thus our iteration counters must be reduced by 1 to prevent out of bound exception
+			int xlen = mriData.XLength - 1;
+			int ylen = mriData.YLength - 1;
+			int zlen = mriData.ZLength - 1;
+
+			var mcAlgo = new MarchingCubesAlgorithm();
+			var box = new BoundingBox();
+			for (int x = 0; x < xlen; x++)
 			{
-				for (int y = 0; y < mriData.YLength; y++)
+				for (int y = 0; y < ylen; y++)
 				{
-					var progress = (y + z * mriData.YLength) / (float)(mriData.YLength * mriData.ZLength);
+					// report progress here as one dimension by itself would progress really fast (too small increments)
+					var progress = (y + x * ylen) / (float)(ylen * xlen);
 					var newProgress = (int)(progress * 100);
 					if (newProgress >= 100)
 						newProgress = 99; // don't send 100 yet, send it only once at the end of the method
@@ -79,23 +83,32 @@ namespace MarchingCubes.Scenes
 						p?.Invoke(this, newProgress);
 						lastProgress = newProgress;
 					}
-					for (int x = 0; x < mriData.XLength; x++)
+					for (int z = 0; z < zlen; z++)
 					{
-						var value = mriData[x, y, z];
-						if (value > limit)
-						{
-							bbox.Min.X = x;
-							bbox.Min.Y = y;
-							bbox.Min.Z = z;
-							bbox.Max.X = x + 1;
-							bbox.Max.Y = z + 1;
-							bbox.Max.Z = z + 1;
-							meshBuilder.AddBox(bbox, textureScale);
-						}
+						box.Min.X = x;
+						box.Min.Y = y;
+						box.Min.Z = z;
+						box.Max.X = x + 1;
+						box.Max.Y = y + 1;
+						box.Max.Z = z + 1;
+						var vertices = mcAlgo.Polygonize(mriData, isolevel, box);
+						if (vertices != null && vertices.Count > 0)
+							triangleBuilder.Vertices.AddRange(vertices);
+
+						//if (value > limit)
+						//{
+						//	bbox.Min.X = x;
+						//	bbox.Min.Y = y;
+						//	bbox.Min.Z = z;
+						//	bbox.Max.X = x + 1;
+						//	bbox.Max.Y = z + 1;
+						//	bbox.Max.Z = z + 1;
+						//	meshBuilder.AddBox(bbox, textureScale);
+						//}
 					}
 				}
 			}
-			_dataMesh = _renderContext.MeshCreator.CreateMesh(meshBuilder);
+			_dataMesh = _renderContext.MeshCreator.CreateMesh(triangleBuilder);
 
 			var visualizer = new MarchingCubeVisualizer(_renderContext, mriData, _camera);
 			AddAsync(visualizer);
@@ -157,6 +170,10 @@ namespace MarchingCubes.Scenes
 			{
 				movement += Vector3.UnitX;
 			}
+			if (keyboardState.IsKeyDown(Keys.LeftShift))
+				movement *= 4f;
+			if (keyboardState.IsKeyDown(Keys.LeftControl))
+				movement /= 4f;
 			_camera.Move(movement);
 		}
 
