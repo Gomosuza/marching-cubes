@@ -27,10 +27,19 @@
 			ZLength = zLength;
 		}
 
+		/// <summary>
+		/// The data length in x direction.
+		/// </summary>
 		public int XLength { get; }
 
+		/// <summary>
+		/// The data length in y direction.
+		/// </summary>
 		public int YLength { get; }
 
+		/// <summary>
+		/// The data length in z direction.
+		/// </summary>
 		public int ZLength { get; }
 
 		/// <summary>

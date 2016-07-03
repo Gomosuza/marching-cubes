@@ -16,9 +16,11 @@ namespace MarchingCubes.SceneGraph
 
 		private SceneGraphRoot _root;
 		private bool _parentSet;
+		private string _name;
 
-		public int UpdateOrder => 0;
-
+		/// <summary>
+		/// Creates a new scenegraph entity.
+		/// </summary>
 		protected SceneGraphEntity()
 		{
 			Visible = Enabled = true;
@@ -27,6 +29,16 @@ namespace MarchingCubes.SceneGraph
 			_sceneGraphEntitiesToBeAdded = new List<SceneGraphEntity>();
 		}
 
+		/// <summary>
+		/// Not used.
+		/// </summary>
+		[Obsolete("Monogame artefact, will never be used")]
+		public int UpdateOrder => 0;
+
+		/// <summary>
+		/// Not used.
+		/// </summary>
+		[Obsolete("Monogame artefact, will never be used")]
 		public int DrawOrder => 0;
 
 		/// <summary>
@@ -39,7 +51,15 @@ namespace MarchingCubes.SceneGraph
 		/// </summary>
 		public bool Enabled { get; set; }
 
-		public string Name { get; set; }
+		/// <summary>
+		/// The name of the current scenegraph entity.
+		/// Mainly used for debugging purposes. If not set will return type name.
+		/// </summary>
+		public string Name
+		{
+			get { return _name ?? GetType().FullName; }
+			set { _name = value; }
+		}
 
 		/// <summary>
 		/// Returns the parent of the current entity.
@@ -52,12 +72,28 @@ namespace MarchingCubes.SceneGraph
 		/// </summary>
 		public bool Initialized { get; protected set; }
 
+		/// <summary>
+		/// Not used, do not hook.
+		/// </summary>
+		[Obsolete("Monogame artefact, will never be called")]
 		public event EventHandler<EventArgs> EnabledChanged;
 
+		/// <summary>
+		/// Not used, do not hook.
+		/// </summary>
+		[Obsolete("Monogame artefact, will never be called")]
 		public event EventHandler<EventArgs> UpdateOrderChanged;
 
+		/// <summary>
+		/// Not used, do not hook.
+		/// </summary>
+		[Obsolete("Monogame artefact, will never be called")]
 		public event EventHandler<EventArgs> DrawOrderChanged;
 
+		/// <summary>
+		/// Not used, do not hook.
+		/// </summary>
+		[Obsolete("Monogame artefact, will never be called")]
 		public event EventHandler<EventArgs> VisibleChanged;
 
 		/// <summary>
@@ -111,11 +147,20 @@ namespace MarchingCubes.SceneGraph
 			_root = (SceneGraphRoot)root;
 		}
 
+		/// <summary>
+		/// Initializes the current entity. This should only be called if <see cref="Initialized"/> is false.
+		/// If a non-initialized entity is added to a scenegraph, the scenegraph will automatically initialize the entity
+		/// on a background thread before adding it to the update/render loop.
+		/// </summary>
 		public virtual void Initialize()
 		{
 			Initialized = true;
 		}
 
+		/// <summary>
+		/// Updates the scenegraph entity and all its children given that it is <see cref="Enabled"/>.
+		/// </summary>
+		/// <param name="gameTime"></param>
 		public virtual void Update(GameTime gameTime)
 		{
 			if (!Enabled)
@@ -168,6 +213,10 @@ namespace MarchingCubes.SceneGraph
 			}
 		}
 
+		/// <summary>
+		/// Renderes the scenegraph entity and all its children, given that it is <see cref="Visible"/>.
+		/// </summary>
+		/// <param name="gameTime"></param>
 		public virtual void Draw(GameTime gameTime)
 		{
 			if (!Visible)
@@ -184,6 +233,7 @@ namespace MarchingCubes.SceneGraph
 		/// Adds the entity the scenegraph.
 		/// Note that the item is not added directly but rather the next time update is called.
 		/// Entities that are not yet initialized are also further delayed (until initialize has executed on a background thread).
+		/// The initialize thread is executed on the first parent scenegraph root that is found.
 		/// Due to this, entities are not guaranteed to be added in same order as method was called (e.g. a not yet initialized entity is added first
 		/// and needs 3s to initialize on the background thread. In the meantime entities that are already Initialized can be added directly).
 		/// To prevent this issue, never mix initialized and non-initialized entities. Both categories are guaranteed to be added in order, UNLESS they are mixed.

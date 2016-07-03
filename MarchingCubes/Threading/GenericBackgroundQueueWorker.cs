@@ -5,7 +5,7 @@ using System.ComponentModel;
 namespace MarchingCubes.Threading
 {
 	/// <summary>
-	/// A generic worker that works on generic <see cref="TData"/>.
+	/// A generic worker that works on generic TData.
 	/// Data is added into a queue and processed in order. Upon finishing a work item, the function is called.
 	/// </summary>
 	/// <typeparam name="TData"></typeparam>
@@ -67,7 +67,7 @@ namespace MarchingCubes.Threading
 		}
 
 		/// <summary>
-		/// Queues an item for the operation. Upon completion the <see cref="action"/> is called.
+		/// Queues an item for the operation. Upon completion the action is called.
 		/// </summary>
 		/// <param name="data"></param>
 		/// <param name="action"></param>

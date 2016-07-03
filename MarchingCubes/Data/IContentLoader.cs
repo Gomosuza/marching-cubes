@@ -1,4 +1,6 @@
-﻿namespace MarchingCubes.Data
+﻿using System.IO;
+
+namespace MarchingCubes.Data
 {
 	/// <summary>
 	/// Base interface for any dataset that can be loaded.
@@ -8,6 +10,12 @@
 	/// </summary>
 	public interface IContentLoader<out T>
 	{
+		/// <summary>
+		/// When called will load the specific file as the provided file type.
+		/// </summary>
+		/// <param name="filepath">The path from where to load.</param>
+		/// <returns>The loaded file type</returns>
+		/// <exception cref="FileLoadException">Thrown when the file is missing, or wrong format.</exception>
 		T Load(string filepath);
 	}
 }

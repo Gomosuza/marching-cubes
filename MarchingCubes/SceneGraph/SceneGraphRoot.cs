@@ -8,11 +8,16 @@ namespace MarchingCubes.SceneGraph
 	/// It allows to add entities to itself  (as children) that in turn will be rendered and updated.
 	/// The scene graph is itself a <see cref="SceneGraphEntity"/> and can be added to other scene graphs.
 	/// Circular references are not checked and will result in a <see cref="StackOverflowException"/>.
+	/// The scene graph root handles loading of all its child entities (if a non-initialized entity is added, initialize is called in a background thread
+	/// and the entitiy will only be added to the update/draw collection once finished).
 	/// </summary>
 	public class SceneGraphRoot : SceneGraphEntity
 	{
 		private readonly GenericBackgroundWorker<SceneGraphEntity> _sceneGraphObjectInitializer;
 
+		/// <summary>
+		/// Creates a new scenegrapgh root.
+		/// </summary>
 		public SceneGraphRoot()
 		{
 			_sceneGraphObjectInitializer = new GenericBackgroundWorker<SceneGraphEntity>(e => e.Initialize());

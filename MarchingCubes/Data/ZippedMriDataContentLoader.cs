@@ -7,9 +7,23 @@ namespace MarchingCubes.Data
 {
 	/// <summary>
 	/// Content loader implementation for a zip mri file.
+	/// Expected file format:
+	/// .zip file with at least 2 entries ending in .info and .raw
+	/// The first .info file found is parsed:
+	/// It must contain one line with 100x200x300 (3 valid integers seperated by x) defining the x,y and z dimension of the actual data.
+	/// Empty lines and lines starting with ; are ignored.
+	/// The first .raw file found is parsed:
+	/// Its length must equal to the sum of the x,y and z values from the info file and each byte will be parsed into an integer.
 	/// </summary>
 	public class ZippedMriDataContentLoader : IContentLoader<ZippedMriData>
 	{
+		/// <summary>
+		/// Loads an mri zip file.
+		/// See class header for file spec.
+		/// </summary>
+		/// <param name="filepath">The path from where to load.</param>
+		/// <returns>The loaded file type</returns>
+		/// <exception cref="FileLoadException">Thrown when the file is missing, or wrong format.</exception>
 		public ZippedMriData Load(string filepath)
 		{
 			using (var zip = ZipFile.Open(filepath, ZipArchiveMode.Read))

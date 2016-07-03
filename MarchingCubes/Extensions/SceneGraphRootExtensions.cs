@@ -12,7 +12,7 @@ namespace MarchingCubes.Extensions
 	{
 		/// <summary>
 		/// When called will add a temporary loading scene to the <see cref="SceneGraphRoot"/>.
-		/// The progress scene will automatically update remove itself when the Initialize function of the <see cref="scene"/> is finished.
+		/// The progress scene will automatically update remove itself when the Initialize function of the scene is finished.
 		/// </summary>
 		/// <param name="root"></param>
 		/// <param name="scene">The actual scene that has heavy loading in its Initialize function.</param>
