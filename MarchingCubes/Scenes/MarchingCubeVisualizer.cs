@@ -1,5 +1,4 @@
 ﻿using MarchingCubes.RendererExtensions;
-using MarchingCubes.SceneGraph;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Renderer;
@@ -11,25 +10,20 @@ namespace MarchingCubes.Scenes
 	/// <summary>
 	/// The visualizer provides a nice realtime visualization of the inner workings of the marching cube alogrithm while it is assembling the result.
 	/// </summary>
-	public class MarchingCubeVisualizer : SceneGraphEntity
+	public class MarchingCubeVisualizer : MarchingCubeBaseScene
 	{
-		private readonly IRenderContext _renderContext;
-		private readonly IInputData _inputData;
-		private readonly ICamera _camera;
 		private Mesh _mesh;
 		private Pen _pen;
+		private ICamera _camera;
 
 		/// <summary>
 		/// Creates a new instance of the visualizer.
 		/// </summary>
 		/// <param name="renderContext"></param>
-		/// <param name="inputData"></param>
-		/// <param name="camera"></param>
-		public MarchingCubeVisualizer(IRenderContext renderContext, IInputData inputData, ICamera camera)
+		/// <param name="file"></param>
+		public MarchingCubeVisualizer(IRenderContext renderContext, string file) : base(renderContext, file)
 		{
-			_renderContext = renderContext;
-			_inputData = inputData;
-			_camera = camera;
+
 		}
 
 		/// <summary>
@@ -37,10 +31,14 @@ namespace MarchingCubes.Scenes
 		/// </summary>
 		public override void Initialize()
 		{
+			base.Initialize();
+			_camera = new FirstPersonCamera(RenderContext.GraphicsDevice, new Vector3(0, 100, 0));
+			_camera.AddHorizontalRotation(MathHelper.ToRadians(90 + 45));
+
 			var builder = new LineMeshDescriptionBuilder();
-			var bbox = new BoundingBox(Vector3.Zero, new Vector3(_inputData.XLength, _inputData.YLength, _inputData.ZLength));
+			var bbox = new BoundingBox(Vector3.Zero, new Vector3(InputData.XLength, InputData.YLength, InputData.ZLength));
 			builder.AddBox(bbox, Color.Black);
-			_mesh = _renderContext.MeshCreator.CreateMesh(builder);
+			_mesh = RenderContext.MeshCreator.CreateMesh(builder);
 
 			_pen = new VertexColorPen(CullMode.None);
 
@@ -53,7 +51,7 @@ namespace MarchingCubes.Scenes
 		/// <param name="gameTime"></param>
 		public override void Draw(GameTime gameTime)
 		{
-			_renderContext.DrawMesh(_mesh, Matrix.Identity, _camera.View, _camera.Projection, null, _pen);
+			RenderContext.DrawMesh(_mesh, Matrix.Identity, _camera.View, _camera.Projection, null, _pen);
 			base.Draw(gameTime);
 		}
 	}

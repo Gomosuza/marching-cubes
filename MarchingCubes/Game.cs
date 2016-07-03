@@ -4,6 +4,11 @@ using MarchingCubes.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Renderer;
+using System;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
+using Keys = Microsoft.Xna.Framework.Input.Keys;
 
 namespace MarchingCubes
 {
@@ -14,6 +19,12 @@ namespace MarchingCubes
 	{
 		private readonly GraphicsDeviceManager _graphicsDeviceManager;
 		private IRenderContext _renderContext;
+
+		private string _selectedAsset;
+		private string[] _availableAssets;
+		private int _assetIndex;
+		private bool _reloadScene;
+		private int _sceneType;
 
 		/// <summary>
 		/// Default ctor.
@@ -28,18 +39,22 @@ namespace MarchingCubes
 		/// </summary>
 		protected override void Initialize()
 		{
-			Window.Title = "Marching cubes demo - Esc to quit";
 			Content.RootDirectory = "Content";
 			_renderContext = new DefaultRenderContext(_graphicsDeviceManager, Content);
-			var root = new SceneGraphRoot();
 
-			var scene = new MarchingCubesScene(_renderContext, "sphere.zip");
+			Components.Add(new SceneGraphRoot());
+			_availableAssets = Directory.GetFiles(Content.RootDirectory, "*.zip").Select(a => a.Substring(Content.RootDirectory.Length + 1)).ToArray();
+			_selectedAsset = _availableAssets[0];
+			UpdateTitle();
 
-			root.AddAsyncWithLoadingScreen(scene, _renderContext);
-
-			Components.Add(root);
-
+			_reloadScene = true;
+			_sceneType = 2;
 			base.Initialize();
+		}
+
+		private void UpdateTitle()
+		{
+			Window.Title = $"Marching cubes demo - Esc to quit; F1 to show help; current asset: {_selectedAsset}";
 		}
 
 		/// <summary>
@@ -52,10 +67,50 @@ namespace MarchingCubes
 				return;
 
 			// easy way for user to quit
-			if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+			var kb = Keyboard.GetState();
+			if (kb.IsKeyDown(Keys.Escape))
 			{
 				Exit();
 				return;
+			}
+			if (kb.IsKeyDown(Keys.F1))
+			{
+				var message = new[]
+				{
+					"Keybindings:",
+					"F5 - starts the marching cube visualizer",
+					"F6 - loads the finsihed marching cubes result",
+					"F7 - cycles through and changes the currently loaded asset (this reloads the current mode)"
+				};
+				MessageBox.Show(string.Join(Environment.NewLine, message));
+			}
+			else if (kb.IsKeyDown(Keys.F5) || (_sceneType == 1 && _reloadScene))
+			{
+				_sceneType = 1;
+				_reloadScene = false;
+
+				var root = Components.Get<SceneGraphRoot>();
+				var scene = new MarchingCubeVisualizer(_renderContext, _selectedAsset);
+				root.AddAsync(scene);
+			}
+			else if (kb.IsKeyDown(Keys.F6) || (_sceneType == 2 && _reloadScene))
+			{
+				_sceneType = 2;
+				_reloadScene = false;
+
+				var root = Components.Get<SceneGraphRoot>();
+				var scene = new MarchingCubesScene(_renderContext, _selectedAsset);
+				root.AddAsyncWithLoadingScreen(scene, _renderContext);
+			}
+			if (kb.IsKeyDown(Keys.F7))
+			{
+				_assetIndex = (_assetIndex + 1) % _availableAssets.Length;
+				_selectedAsset = _availableAssets[_assetIndex];
+
+
+				var root = Components.Get<SceneGraphRoot>();
+
+				_reloadScene = true;
 			}
 
 			base.Update(gameTime);

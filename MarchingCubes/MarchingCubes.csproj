@@ -50,6 +50,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -62,6 +63,7 @@
     <Compile Include="Data\IContentLoader.cs" />
     <Compile Include="Data\ZippedMriDataContentLoader.cs" />
     <Compile Include="Extensions\ContentManagerExtensions.cs" />
+    <Compile Include="Extensions\IGameComponentEnumerableExtensions.cs" />
     <Compile Include="Extensions\SceneGraphRootExtensions.cs" />
     <Compile Include="FirstPersonCamera.cs" />
     <Compile Include="Game.cs" />
@@ -72,6 +74,7 @@
     <Compile Include="RendererExtensions\TriangleMeshDescriptionBuilder.cs" />
     <Compile Include="SceneGraph\ISceneGraphEntityInitializeProgressReporter.cs" />
     <Compile Include="Scenes\LoadingProgressScene.cs" />
+    <Compile Include="Scenes\MarchingCubeBaseScene.cs" />
     <Compile Include="Scenes\MarchingCubesScene.cs" />
     <Compile Include="Scenes\MarchingCubeVisualizer.cs" />
     <Compile Include="Program.cs" />

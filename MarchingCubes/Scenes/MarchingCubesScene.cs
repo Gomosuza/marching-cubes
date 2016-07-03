@@ -1,6 +1,4 @@
-﻿using MarchingCubes.Data;
-using MarchingCubes.Extensions;
-using MarchingCubes.RendererExtensions;
+﻿using MarchingCubes.RendererExtensions;
 using MarchingCubes.SceneGraph;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -16,11 +14,9 @@ namespace MarchingCubes.Scenes
 	/// <summary>
 	/// The main scene that will show the result of the marching cube algorithm.
 	/// </summary>
-	public class MarchingCubesScene : SceneGraphEntity, ISceneGraphEntityInitializeProgressReporter
+	public class MarchingCubesScene : MarchingCubeBaseScene, ISceneGraphEntityInitializeProgressReporter
 	{
 		private ICamera _camera;
-		private readonly IRenderContext _renderContext;
-		private readonly string _dataPath;
 
 		private Mesh _dataMesh;
 		private Brush _solidColorBrush;
@@ -32,10 +28,8 @@ namespace MarchingCubes.Scenes
 		/// </summary>
 		/// <param name="renderContext"></param>
 		/// <param name="dataPath"></param>
-		public MarchingCubesScene(IRenderContext renderContext, string dataPath)
+		public MarchingCubesScene(IRenderContext renderContext, string dataPath) : base(renderContext, dataPath)
 		{
-			_renderContext = renderContext;
-			_dataPath = dataPath;
 		}
 
 		/// <summary>
@@ -49,12 +43,11 @@ namespace MarchingCubes.Scenes
 		/// </summary>
 		public override void Initialize()
 		{
-			_camera = new FirstPersonCamera(_renderContext.GraphicsDevice, new Vector3(0, 100, 0));
+			base.Initialize();
+			_camera = new FirstPersonCamera(RenderContext.GraphicsDevice, new Vector3(0, 100, 0));
 			_camera.AddHorizontalRotation(MathHelper.ToRadians(90 + 45));
 			_solidColorBrush = new SolidColorBrush(Color.Green);
 			_pen = new SolidColorPen(Color.Black);
-
-			var mriData = _renderContext.Content.LoadWithAttributeParser<ZippedMriData>(_dataPath);
 
 			var triangleBuilder = new TriangleMeshDescriptionBuilder();
 			// isolevel defines which points are inside/outside the structure
@@ -62,9 +55,9 @@ namespace MarchingCubes.Scenes
 			int lastProgress = 0;
 
 			// for each point we will at all 8 points forming a cube, we will simply take the index + 1 in each direction, thus our iteration counters must be reduced by 1 to prevent out of bound exception
-			int xlen = mriData.XLength - 1;
-			int ylen = mriData.YLength - 1;
-			int zlen = mriData.ZLength - 1;
+			int xlen = InputData.XLength - 1;
+			int ylen = InputData.YLength - 1;
+			int zlen = InputData.ZLength - 1;
 
 			var mcAlgo = new MarchingCubesAlgorithm();
 			var box = new BoundingBox();
@@ -91,18 +84,16 @@ namespace MarchingCubes.Scenes
 						box.Max.X = x + 1;
 						box.Max.Y = y + 1;
 						box.Max.Z = z + 1;
-						var vertices = mcAlgo.Polygonize(mriData, isolevel, box);
+						var vertices = mcAlgo.Polygonize(InputData, isolevel, box);
 						if (vertices != null && vertices.Count > 0)
 							triangleBuilder.Vertices.AddRange(vertices);
 					}
 				}
 			}
-			_dataMesh = _renderContext.MeshCreator.CreateMesh(triangleBuilder);
-
-			var visualizer = new MarchingCubeVisualizer(_renderContext, mriData, _camera);
-			AddAsync(visualizer);
+			_dataMesh = RenderContext.MeshCreator.CreateMesh(triangleBuilder);
 
 			_firstUpdate = true;
+
 			var i = InitializeProgress;
 			i?.Invoke(this, 100);
 			InitializeProgress = null;
@@ -129,7 +120,7 @@ namespace MarchingCubes.Scenes
 				CenterCursor();
 			}
 			var mouseState = Mouse.GetState();
-			var center = new Point(_renderContext.GraphicsDevice.Viewport.Width / 2, _renderContext.GraphicsDevice.Viewport.Height / 2);
+			var center = new Point(RenderContext.GraphicsDevice.Viewport.Width / 2, RenderContext.GraphicsDevice.Viewport.Height / 2);
 			var diff = mouseState.Position - center;
 
 			var t = gameTime.GetElapsedSeconds();
@@ -168,7 +159,7 @@ namespace MarchingCubes.Scenes
 
 		private void CenterCursor()
 		{
-			Mouse.SetPosition(_renderContext.GraphicsDevice.Viewport.Width / 2, _renderContext.GraphicsDevice.Viewport.Height / 2);
+			Mouse.SetPosition(RenderContext.GraphicsDevice.Viewport.Width / 2, RenderContext.GraphicsDevice.Viewport.Height / 2);
 		}
 
 		/// <summary>
@@ -177,7 +168,7 @@ namespace MarchingCubes.Scenes
 		/// <param name="gameTime"></param>
 		public override void Draw(GameTime gameTime)
 		{
-			_renderContext.DrawMesh(_dataMesh, Matrix.Identity, _camera.View, _camera.Projection, _solidColorBrush, _pen);
+			RenderContext.DrawMesh(_dataMesh, Matrix.Identity, _camera.View, _camera.Projection, _solidColorBrush, _pen);
 
 			base.Draw(gameTime);
 		}

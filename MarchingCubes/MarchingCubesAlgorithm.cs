@@ -1,5 +1,4 @@
-﻿using MarchingCubes.Data;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -29,11 +28,11 @@ namespace MarchingCubes
 		/// <summary>
 		/// Given a dataset and the isolevel this will return the polygons that make up the provided cube.
 		/// </summary>
-		/// <param name="mriData"></param>
+		/// <param name="inputData"></param>
 		/// <param name="isolevel"></param>
 		/// <param name="cube">A bounding box that represents the data to check. Currently all values must be castable to ints.</param>
 		/// <returns>Null or empty list when the cube contains no data to polygonize, otherwise list with all vertices that make up the polygon.</returns>
-		public List<VertexPosition> Polygonize(ZippedMriData mriData, int isolevel, BoundingBox cube)
+		public List<VertexPosition> Polygonize(IInputData inputData, int isolevel, BoundingBox cube)
 		{
 			int x1 = (int)cube.Min.X;
 			int y1 = (int)cube.Min.Y;
@@ -45,14 +44,14 @@ namespace MarchingCubes
 			var values = new int[8];
 			// iterate through all 8 points of the cube
 			// bottom first, clockwise order
-			values[0] = mriData[x1, y1, z1];
-			values[1] = mriData[x2, y1, z1];
-			values[2] = mriData[x2, y2, z1];
-			values[3] = mriData[x1, y2, z1];
-			values[4] = mriData[x1, y1, z2];
-			values[5] = mriData[x2, y1, z2];
-			values[6] = mriData[x2, y2, z2];
-			values[7] = mriData[x1, y2, z2];
+			values[0] = inputData[x1, y1, z1];
+			values[1] = inputData[x2, y1, z1];
+			values[2] = inputData[x2, y2, z1];
+			values[3] = inputData[x1, y2, z1];
+			values[4] = inputData[x1, y1, z2];
+			values[5] = inputData[x2, y1, z2];
+			values[6] = inputData[x2, y2, z2];
+			values[7] = inputData[x1, y2, z2];
 
 			// bitwise add up all the values that are below the surface
 			var index = 0;
