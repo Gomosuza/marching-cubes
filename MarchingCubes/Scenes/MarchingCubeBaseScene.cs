@@ -52,7 +52,7 @@ namespace MarchingCubes.Scenes
 		{
 			InputData = RenderContext.Content.LoadWithAttributeParser<ZippedMriData>(_dataPath);
 
-			_camera = new FirstPersonCamera(RenderContext.GraphicsDevice, new Vector3(0, 100, 0));
+			_camera = new FirstPersonCamera(RenderContext.GraphicsDevice, new Vector3(-100, 100, -100));
 			_camera.AddHorizontalRotation(MathHelper.ToRadians(90 + 45));
 
 			var builder = new LineMeshDescriptionBuilder();
@@ -141,9 +141,10 @@ namespace MarchingCubes.Scenes
 		/// <param name="mesh"></param>
 		/// <param name="brush"></param>
 		/// <param name="pen"></param>
-		protected void DrawMesh(Mesh mesh, Brush brush, Pen pen)
+		/// <param name="world">Optional world matrix that can be applied to transform the object.</param>
+		protected void DrawMesh(Mesh mesh, Brush brush, Pen pen, Matrix? world = null)
 		{
-			RenderContext.DrawMesh(mesh, Matrix.Identity, _camera.View, _camera.Projection, brush, pen);
+			RenderContext.DrawMesh(mesh, world ?? Matrix.Identity, _camera.View, _camera.Projection, brush, pen);
 		}
 	}
 }
