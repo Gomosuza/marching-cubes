@@ -94,17 +94,6 @@ namespace MarchingCubes.Scenes
 						var vertices = mcAlgo.Polygonize(mriData, isolevel, box);
 						if (vertices != null && vertices.Count > 0)
 							triangleBuilder.Vertices.AddRange(vertices);
-
-						//if (value > limit)
-						//{
-						//	bbox.Min.X = x;
-						//	bbox.Min.Y = y;
-						//	bbox.Min.Z = z;
-						//	bbox.Max.X = x + 1;
-						//	bbox.Max.Y = z + 1;
-						//	bbox.Max.Z = z + 1;
-						//	meshBuilder.AddBox(bbox, textureScale);
-						//}
 					}
 				}
 			}

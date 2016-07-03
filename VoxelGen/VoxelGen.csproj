@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{794B3E20-BC63-4A39-922C-8EE5B3C6CDA7}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <ProjectGuid>{FBD5D76A-020E-4610-A653-9B2856108274}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MarchingCubes</RootNamespace>
-    <AssemblyName>MarchingCubes</AssemblyName>
+    <RootNamespace>VoxelGen</RootNamespace>
+    <AssemblyName>VoxelGen</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -22,7 +22,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\MarchingCubes.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -32,20 +31,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\MarchingCubes.XML</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MonoGame.Framework, Version=3.5.1.1679, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MonoGame.Framework.WindowsDX.3.5.1.1679\lib\net40\MonoGame.Framework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Renderer, Version=0.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Renderer.0.0.2\lib\net461\Renderer.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
@@ -58,37 +45,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\ContentLoaderAttribute.cs" />
-    <Compile Include="Data\IContentLoader.cs" />
-    <Compile Include="Data\ZippedMriDataContentLoader.cs" />
-    <Compile Include="Extensions\ContentManagerExtensions.cs" />
-    <Compile Include="Extensions\SceneGraphRootExtensions.cs" />
-    <Compile Include="FirstPersonCamera.cs" />
-    <Compile Include="Game.cs" />
-    <Compile Include="ICamera.cs" />
-    <Compile Include="IInputData.cs" />
-    <Compile Include="MarchingCubesAlgorithm.cs" />
-    <Compile Include="RendererExtensions\LineMeshDescriptionBuilder.cs" />
-    <Compile Include="RendererExtensions\TriangleMeshDescriptionBuilder.cs" />
-    <Compile Include="SceneGraph\ISceneGraphEntityInitializeProgressReporter.cs" />
-    <Compile Include="Scenes\LoadingProgressScene.cs" />
-    <Compile Include="Scenes\MarchingCubesScene.cs" />
-    <Compile Include="Scenes\MarchingCubeVisualizer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SceneGraph\SceneGraphRoot.cs" />
-    <Compile Include="Threading\GenericBackgroundQueueWorker.cs" />
-    <Compile Include="SceneGraph\SceneGraphEntity.cs" />
-    <Compile Include="Data\ZippedMriData.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Content\mri.zip">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Content\sphere.zip">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="packages.config" />
+    <Compile Include="VoxelType.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

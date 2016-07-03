@@ -33,7 +33,7 @@ namespace MarchingCubes
 			_renderContext = new DefaultRenderContext(_graphicsDeviceManager, Content);
 			var root = new SceneGraphRoot();
 
-			var scene = new MarchingCubesScene(_renderContext, "mri.zip");
+			var scene = new MarchingCubesScene(_renderContext, "sphere.zip");
 
 			root.AddAsyncWithLoadingScreen(scene, _renderContext);
 
