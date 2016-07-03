@@ -20,15 +20,17 @@ namespace MarchingCubes.Scenes
 	{
 		private ICamera _camera;
 		private readonly IRenderContext _renderContext;
+		private readonly string _dataPath;
 
 		private Mesh _dataMesh;
 		private Brush _solidColorBrush;
 		private Pen _pen;
 		private bool _firstUpdate;
 
-		public MarchingCubesScene(IRenderContext renderContext)
+		public MarchingCubesScene(IRenderContext renderContext, string dataPath)
 		{
 			_renderContext = renderContext;
+			_dataPath = dataPath;
 		}
 
 		public override void Initialize()
@@ -39,7 +41,7 @@ namespace MarchingCubes.Scenes
 			_pen = new SolidColorPen(Color.Black);
 
 
-			var mriData = _renderContext.Content.LoadWithAttributeParser<ZippedMriData>("mri.zip");
+			var mriData = _renderContext.Content.LoadWithAttributeParser<ZippedMriData>(_dataPath);
 
 			var meshBuilder = new TextureMeshDescriptionBuilder();
 
