@@ -19,6 +19,12 @@ namespace MarchingCubes.Scenes
 		private Mesh _mesh;
 		private Pen _pen;
 
+		/// <summary>
+		/// Creates a new instance of the visualizer.
+		/// </summary>
+		/// <param name="renderContext"></param>
+		/// <param name="inputData"></param>
+		/// <param name="camera"></param>
 		public MarchingCubeVisualizer(IRenderContext renderContext, IInputData inputData, ICamera camera)
 		{
 			_renderContext = renderContext;
@@ -26,6 +32,9 @@ namespace MarchingCubes.Scenes
 			_camera = camera;
 		}
 
+		/// <summary>
+		/// Initializes the visualizer by creating a wireframe mesh.
+		/// </summary>
 		public override void Initialize()
 		{
 			var builder = new LineMeshDescriptionBuilder();
@@ -38,6 +47,10 @@ namespace MarchingCubes.Scenes
 			Initialized = true;
 		}
 
+		/// <summary>
+		/// Draws the marching cubes visualizer.
+		/// </summary>
+		/// <param name="gameTime"></param>
 		public override void Draw(GameTime gameTime)
 		{
 			_renderContext.DrawMesh(_mesh, Matrix.Identity, _camera.View, _camera.Projection, null, _pen);

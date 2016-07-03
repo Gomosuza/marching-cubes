@@ -17,11 +17,18 @@ namespace MarchingCubes.Scenes
 		private Texture2D _pixel;
 		private bool _removedFromParent;
 
+		/// <summary>
+		/// Creates a new instance of the loading scene.
+		/// </summary>
+		/// <param name="renderContext"></param>
 		public LoadingProgressScene(IRenderContext renderContext)
 		{
 			_renderContext = renderContext;
 		}
 
+		/// <summary>
+		/// Prepares loading scene content.
+		/// </summary>
 		public override void Initialize()
 		{
 			_pixel = new RenderTarget2D(_renderContext.GraphicsDevice, 1, 1);
@@ -51,6 +58,10 @@ namespace MarchingCubes.Scenes
 			}
 		}
 
+		/// <summary>
+		/// Draws the loading scene by drawing a progress bar over the screen and setting its fillstate based on the last <see cref="SetProgress"/> call.
+		/// </summary>
+		/// <param name="gameTime"></param>
 		public override void Draw(GameTime gameTime)
 		{
 			var vp = _renderContext.GraphicsDevice.Viewport;

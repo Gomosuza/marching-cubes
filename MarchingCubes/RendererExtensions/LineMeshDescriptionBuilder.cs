@@ -11,12 +11,24 @@ namespace MarchingCubes.RendererExtensions
 	/// </summary>
 	public class LineMeshDescriptionBuilder : IMeshDescription<VertexPositionColor>
 	{
+		/// <summary>
+		/// The primitive type in use.
+		/// </summary>
 		public PrimitiveType PrimitiveType => PrimitiveType.LineList;
 
+		/// <summary>
+		/// The total vertex count.
+		/// </summary>
 		public int VertexCount => Vertices.Count;
 
+		/// <summary>
+		/// The actual vertices.
+		/// </summary>
 		public List<VertexPositionColor> Vertices { get; }
 
+		/// <summary>
+		/// Creates a new instance that creates line meshes. This instance always uses <see cref="Microsoft.Xna.Framework.Graphics.PrimitiveType.LineList"/>.
+		/// </summary>
 		public LineMeshDescriptionBuilder()
 		{
 			Vertices = new List<VertexPositionColor>();

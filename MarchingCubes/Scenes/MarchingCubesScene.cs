@@ -9,7 +9,6 @@ using Renderer.Extensions;
 using Renderer.Meshes;
 using Renderer.Pens;
 using System;
-using System.Diagnostics;
 
 namespace MarchingCubes.Scenes
 {
@@ -27,12 +26,26 @@ namespace MarchingCubes.Scenes
 		private Pen _pen;
 		private bool _firstUpdate;
 
+		/// <summary>
+		/// Creates a new marching cubes scene instance and tells the scene which data to load.
+		/// </summary>
+		/// <param name="renderContext"></param>
+		/// <param name="dataPath"></param>
 		public MarchingCubesScene(IRenderContext renderContext, string dataPath)
 		{
 			_renderContext = renderContext;
 			_dataPath = dataPath;
 		}
 
+		/// <summary>
+		/// The progress reporter which will be fired with values between 0-100.
+		/// If this is implemented, <see cref="ISceneGraphEntityInitializeProgressReporter.InitializeProgress"/> must be called at least once with a value of 100 (progress completed).
+		/// </summary>
+		public event EventHandler<int> InitializeProgress;
+
+		/// <summary>
+		/// Initializes the marching cubes scene by loading the dataset from disk and creating a mesh for it.
+		/// </summary>
 		public override void Initialize()
 		{
 			_camera = new FirstPersonCamera(_renderContext.GraphicsDevice, new Vector3(0, 100, 0));
@@ -79,7 +92,6 @@ namespace MarchingCubes.Scenes
 						newProgress = 99; // don't send 100 yet, send it only once at the end of the method
 					if (newProgress != lastProgress)
 					{
-						Debug.WriteLine($"Progress: {newProgress}");
 						var p = InitializeProgress;
 						p?.Invoke(this, newProgress);
 						lastProgress = newProgress;
@@ -112,6 +124,10 @@ namespace MarchingCubes.Scenes
 			Initialized = true;
 		}
 
+		/// <summary>
+		/// Updates the marching cubes scene.
+		/// </summary>
+		/// <param name="gameTime"></param>
 		public override void Update(GameTime gameTime)
 		{
 			_camera.Update(gameTime);
@@ -166,13 +182,15 @@ namespace MarchingCubes.Scenes
 			Mouse.SetPosition(_renderContext.GraphicsDevice.Viewport.Width / 2, _renderContext.GraphicsDevice.Viewport.Height / 2);
 		}
 
+		/// <summary>
+		/// Draws the marching cubes scene.
+		/// </summary>
+		/// <param name="gameTime"></param>
 		public override void Draw(GameTime gameTime)
 		{
 			_renderContext.DrawMesh(_dataMesh, Matrix.Identity, _camera.View, _camera.Projection, _solidColorBrush, _pen);
 
 			base.Draw(gameTime);
 		}
-
-		public event EventHandler<int> InitializeProgress;
 	}
 }
