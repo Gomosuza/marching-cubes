@@ -2,6 +2,7 @@
 using MarchingCubes.SceneGraph;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Renderer;
 using Renderer.Brushes;
 using Renderer.Meshes;
@@ -31,16 +32,8 @@ namespace MarchingCubes.Scenes.Visualizer
 		private readonly SolidColorPen _pen;
 
 		private int _currentCubeIndex;
-
-		/// <summary>
-		/// Holds all indices of slices that are fully empty.
-		/// </summary>
-		private readonly bool[] _emptySliceIndices;
-
-		/// <summary>
-		/// Holds all indices of empty rows where at least one row is not empty within the same slice.
-		/// </summary>
-		private readonly bool[,] _emptyRowIndices;
+		private int _cubesPerTick;
+		private MouseState _lastMouse;
 
 		private bool _paused;
 
@@ -71,35 +64,7 @@ namespace MarchingCubes.Scenes.Visualizer
 			cube2.AddBox(box, Color.Black);
 			_visualizerLineMesh = renderContext.MeshCreator.CreateMesh(cube2);
 
-			// setup our indices so we don't have to recheck everytime we need this info
-
-			// since we iterate x first then y then z, our slices are all z values
-			_emptySliceIndices = new bool[_inputData.ZLength];
-			// each row is y,z value (and thus contains all x values)
-			_emptyRowIndices = new bool[_inputData.YLength, _inputData.ZLength];
-			for (int z = 0; z < _inputData.ZLength; z++)
-			{
-				bool sliceIsEmpty = true;
-				for (int y = 0; y < _inputData.YLength; y++)
-				{
-					bool rowIsEmpty = true;
-					for (int x = 0; x < _inputData.XLength; x++)
-					{
-						if (_inputData[x, y, z] > 0)
-						{
-							sliceIsEmpty = rowIsEmpty = false;
-						}
-					}
-					if (rowIsEmpty)
-					{
-						_emptyRowIndices[y, z] = true;
-					}
-				}
-				if (sliceIsEmpty)
-				{
-					_emptySliceIndices[z] = true;
-				}
-			}
+			_cubesPerTick = 1;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -123,15 +88,44 @@ namespace MarchingCubes.Scenes.Visualizer
 				return;
 			}
 
-			FindNextCube();
+			var m = Mouse.GetState();
+			var delta = m.ScrollWheelValue - _lastMouse.ScrollWheelValue;
+			if (delta > 0)
+			{
+				_cubesPerTick *= 2;
+			}
+			else if (delta < 0)
+			{
+				_cubesPerTick /= 2;
+			}
+			if (_cubesPerTick < 1)
+				_cubesPerTick = 1;
+			_lastMouse = m;
+
+			if (_backgroundWorker.IsBusy)
+				return;
+			var totalLength = _inputData.XLength * _inputData.YLength * _inputData.ZLength;
+			if (_currentCubeIndex < totalLength)
+			{
+				_backgroundWorker.RunWorkerAsync(_cubesPerTick);
+				// posibility that our index overflows (e.g. we are 1 before buffer end and want to add 10 more
+				// this is ok because we only use the index to check if we are still in the buffer (and only then would we add further data)
+				_currentCubeIndex += _cubesPerTick;
+			}
 		}
 
 		/// <summary>
-		/// Call to manually step once
+		/// Call to manually step once.
 		/// </summary>
 		public void Step()
 		{
-			FindNextCube();
+			if (_backgroundWorker.IsBusy)
+				return;
+			if (_currentCubeIndex < _inputData.XLength * _inputData.YLength * _inputData.ZLength)
+			{
+				_backgroundWorker.RunWorkerAsync(1);
+				_currentCubeIndex++;
+			}
 		}
 
 		/// <summary>
@@ -144,62 +138,25 @@ namespace MarchingCubes.Scenes.Visualizer
 		}
 
 		/// <summary>
-		/// Checks how many steps need to be made based on the passed time.
-		/// </summary>
-		private void FindNextCube()
-		{
-			// can't add more work when worker is already busy
-			var length = _inputData.XLength * _inputData.YLength * _inputData.ZLength;
-			while (_currentCubeIndex < length && !_backgroundWorker.IsBusy)
-			{
-				var p = GetPositionFromIndex(_currentCubeIndex);
-				int skipCubeCount;
-				if (_emptySliceIndices[(int)p.Z])
-				{
-					// skip the slice entirely, its empty anyway
-					skipCubeCount = _inputData.XLength * _inputData.YLength;
-				}
-				else if (_emptyRowIndices[(int)p.Y, (int)p.Z])
-				{
-					// skip an entire row
-					skipCubeCount = _inputData.XLength;
-				}
-				else
-				{
-					skipCubeCount = 1;
-					if (_inputData[(int)p.X, (int)p.Y, (int)p.Z] > 0)
-					{
-						// hit a cube, fire of backgroundworker to modify the mesh
-						// we can't step anymore as our backgroundworker has no queue, it can only work on 1 item at a time
-						_backgroundWorker.RunWorkerAsync(p);
-					}
-				}
-				_currentCubeIndex += skipCubeCount;
-			}
-		}
-
-		/// <summary>
 		/// Draws the visualizer.
 		/// </summary>
 		/// <param name="gameTime"></param>
 		public override void Draw(GameTime gameTime)
 		{
-			var p = GetPositionFromIndex(_currentCubeIndex);
-			var transform = Matrix.CreateTranslation(p);
-
-			if (_emptySliceIndices[(int)p.Z])
+			var length = _inputData.XLength * _inputData.YLength * _inputData.ZLength;
+			if (_currentCubeIndex < length)
 			{
-				// mark the entire slice
-				transform *= Matrix.CreateScale(_inputData.XLength, _inputData.YLength, 1);
-			}
-			else if (_emptyRowIndices[(int)p.Y, (int)p.Z])
-			{
-				// mark the entire row
-				transform *= Matrix.CreateScale(_inputData.XLength, 1, 1);
-			}
-			_renderContext.DrawMesh(_visualizerMesh, transform, _camera.View, _camera.Projection, _brush);
+				var idx = _backgroundWorker.CubeIndexToArrayIndex(_currentCubeIndex);
+				if (idx != -1)
+				{
+					var p = GetPositionFromIndex(idx);
+					var transform = Matrix.CreateTranslation(p);
 
-			_renderContext.DrawMesh(_visualizerLineMesh, transform, _camera.View, _camera.Projection, null, _pen);
+					_renderContext.DrawMesh(_visualizerMesh, transform, _camera.View, _camera.Projection, _brush);
+
+					_renderContext.DrawMesh(_visualizerLineMesh, transform, _camera.View, _camera.Projection, null, _pen);
+				}
+			}
 		}
 	}
 }

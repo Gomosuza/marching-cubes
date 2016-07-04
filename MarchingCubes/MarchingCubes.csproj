@@ -42,8 +42,8 @@
       <HintPath>..\packages\MonoGame.Framework.WindowsDX.3.5.1.1679\lib\net40\MonoGame.Framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Renderer, Version=0.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Renderer.0.0.3\lib\net461\Renderer.dll</HintPath>
+    <Reference Include="Renderer, Version=0.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Renderer.0.0.4\lib\net461\Renderer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -70,6 +70,7 @@
     <Compile Include="ICamera.cs" />
     <Compile Include="IInputData.cs" />
     <Compile Include="MarchingCubesAlgorithm.cs" />
+    <Compile Include="Point3.cs" />
     <Compile Include="RendererExtensions\LineMeshDescriptionBuilder.cs" />
     <Compile Include="RendererExtensions\TriangleMeshDescriptionBuilder.cs" />
     <Compile Include="SceneGraph\ISceneGraphEntityInitializeProgressReporter.cs" />

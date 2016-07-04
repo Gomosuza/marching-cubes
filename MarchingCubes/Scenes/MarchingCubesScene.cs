@@ -53,7 +53,7 @@ namespace MarchingCubes.Scenes
 			int ylen = InputData.YLength - 1;
 			int zlen = InputData.ZLength - 1;
 
-			var mcAlgo = new MarchingCubesAlgorithm();
+			var mcAlgo = new MarchingCubesAlgorithm(false);
 			var box = new BoundingBox();
 			for (int x = 0; x < xlen; x++)
 			{

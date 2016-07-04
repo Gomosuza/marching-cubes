@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MarchingCubes
 {
@@ -11,14 +12,19 @@ namespace MarchingCubes
 	/// </summary>
 	public class MarchingCubesAlgorithm
 	{
+		private readonly bool _clockwise;
+
 		/// <summary>
 		/// Creates a new instance of the algorithm.
 		/// </summary>
-		public MarchingCubesAlgorithm()
+		/// <param name="clockwise">Depending on the cullmode, the order of the vertices will be swapped. If <see cref="CullMode.CullCounterClockwiseFace"/> is used, set this to false.</param>
+		public MarchingCubesAlgorithm(bool clockwise)
 		{
+			_clockwise = clockwise;
 			if (_edgeTable == null)
 				LoadTables();
 		}
+
 		private static int[] _edgeTable;
 
 		private static int[][] _triangleTable;
@@ -31,7 +37,7 @@ namespace MarchingCubes
 		/// <param name="inputData"></param>
 		/// <param name="isolevel"></param>
 		/// <param name="cube">A bounding box that represents the data to check. Currently all values must be castable to ints.</param>
-		/// <returns>Null or empty list when the cube contains no data to polygonize, otherwise list with all vertices that make up the polygon.</returns>
+		/// <returns>Null or empty list when the cube contains no data to polygonize, otherwise list with all vertices that make up the polygon. List is always a multiple of 3.</returns>
 		public List<VertexPosition> Polygonize(IInputData inputData, int isolevel, BoundingBox cube)
 		{
 			int x1 = (int)cube.Min.X;
@@ -107,6 +113,10 @@ namespace MarchingCubes
 					new VertexPosition(_vertexPositions[arr[i + 1]]),
 					new VertexPosition(_vertexPositions[arr[i + 0]])
 				};
+				if (_clockwise)
+				{
+					tri = tri.Reverse().ToArray();
+				}
 				triangles.AddRange(tri);
 			}
 			return triangles;
