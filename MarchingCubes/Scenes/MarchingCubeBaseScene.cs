@@ -21,7 +21,6 @@ namespace MarchingCubes.Scenes
 		private readonly string _dataPath;
 		private Mesh _mesh;
 		private Pen _pen;
-		private ICamera _camera;
 		private bool _firstUpdate;
 
 		/// <summary>
@@ -41,6 +40,11 @@ namespace MarchingCubes.Scenes
 		}
 
 		/// <summary>
+		/// The camera in control of this scene.
+		/// </summary>
+		public ICamera Camera { get; private set; }
+
+		/// <summary>
 		/// The rendercontext that can be used to render with this class.
 		/// </summary>
 		public IRenderContext RenderContext { get; }
@@ -52,8 +56,8 @@ namespace MarchingCubes.Scenes
 		{
 			InputData = RenderContext.Content.LoadWithAttributeParser<ZippedMriData>(_dataPath);
 
-			_camera = new FirstPersonCamera(RenderContext.GraphicsDevice, new Vector3(-100, 100, -100));
-			_camera.AddHorizontalRotation(MathHelper.ToRadians(90 + 45));
+			Camera = new FirstPersonCamera(RenderContext.GraphicsDevice, new Vector3(-100, 100, -100));
+			Camera.AddHorizontalRotation(MathHelper.ToRadians(90 + 45));
 
 			var builder = new LineMeshDescriptionBuilder();
 			var bbox = new BoundingBox(Vector3.Zero, new Vector3(InputData.XLength, InputData.YLength, InputData.ZLength));
@@ -70,7 +74,7 @@ namespace MarchingCubes.Scenes
 		/// <param name="gameTime"></param>
 		public override void Update(GameTime gameTime)
 		{
-			_camera.Update(gameTime);
+			Camera.Update(gameTime);
 
 			HandleInput(gameTime);
 			base.Update(gameTime);
@@ -90,8 +94,8 @@ namespace MarchingCubes.Scenes
 			var t = gameTime.GetElapsedSeconds();
 			const float factor = 0.4f;
 
-			_camera.AddHorizontalRotation(diff.X * t * factor);
-			_camera.AddVerticalRotation(diff.Y * t * factor);
+			Camera.AddHorizontalRotation(diff.X * t * factor);
+			Camera.AddVerticalRotation(diff.Y * t * factor);
 
 			CenterCursor();
 
@@ -118,7 +122,7 @@ namespace MarchingCubes.Scenes
 				movement *= 4f;
 			if (keyboardState.IsKeyDown(Keys.LeftControl))
 				movement /= 4f;
-			_camera.Move(movement);
+			Camera.Move(movement);
 		}
 
 		private void CenterCursor()
@@ -133,6 +137,8 @@ namespace MarchingCubes.Scenes
 		public override void Draw(GameTime gameTime)
 		{
 			DrawMesh(_mesh, null, _pen);
+
+			base.Draw(gameTime);
 		}
 
 		/// <summary>
@@ -144,7 +150,7 @@ namespace MarchingCubes.Scenes
 		/// <param name="world">Optional world matrix that can be applied to transform the object.</param>
 		protected void DrawMesh(Mesh mesh, Brush brush, Pen pen, Matrix? world = null)
 		{
-			RenderContext.DrawMesh(mesh, world ?? Matrix.Identity, _camera.View, _camera.Projection, brush, pen);
+			RenderContext.DrawMesh(mesh, world ?? Matrix.Identity, Camera.View, Camera.Projection, brush, pen);
 		}
 	}
 }
