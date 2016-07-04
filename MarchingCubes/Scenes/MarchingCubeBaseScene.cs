@@ -28,6 +28,8 @@ namespace MarchingCubes.Scenes
 		/// </summary>
 		protected IInputData InputData;
 
+		private bool _cameraAttached;
+
 		/// <summary>
 		/// Creates a new instance of the base scene.
 		/// </summary>
@@ -65,7 +67,8 @@ namespace MarchingCubes.Scenes
 			_mesh = RenderContext.MeshCreator.CreateMesh(builder);
 
 			_pen = new VertexColorPen(CullMode.None);
-			_firstUpdate = true;
+			_cameraAttached = false;
+			ToggleCameraAttach();
 		}
 
 		/// <summary>
@@ -80,9 +83,25 @@ namespace MarchingCubes.Scenes
 			base.Update(gameTime);
 		}
 
+		/// <summary>
+		/// Toggles camera attach to mouse and keyboard.
+		/// </summary>
+		protected void ToggleCameraAttach()
+		{
+			_cameraAttached = !_cameraAttached;
+			_firstUpdate = true;
+			// very hack-y, I don't like it
+			// maybe work IsMouseVisible into renderer?
+			Game.Instance.IsMouseVisible = !_cameraAttached;
+		}
+
 		private void HandleInput(GameTime gameTime)
 		{
-			if (_firstUpdate)
+			if (!_cameraAttached)
+			{
+				return;
+			}
+			if (_firstUpdate && _cameraAttached)
 			{
 				_firstUpdate = false;
 				CenterCursor();

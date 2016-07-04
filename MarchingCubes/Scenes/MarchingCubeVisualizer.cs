@@ -1,7 +1,10 @@
 ﻿using MarchingCubes.Scenes.Visualizer;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Renderer;
 using Renderer.Brushes;
+using Renderer.Extensions;
 using Renderer.Pens;
 
 namespace MarchingCubes.Scenes
@@ -20,6 +23,11 @@ namespace MarchingCubes.Scenes
 		private VisualizerBackgroundWorker _marchingCubesWorker;
 		private Brush _finsihedMeshBrush;
 		private Pen _finishedMeshPen;
+		private bool _paused;
+		private Texture2D _pixel;
+		private KeyboardState _lastKeyboardState;
+		private MouseState _lastMouse;
+		private ActiveCubeVisualizer _visualizer;
 
 		/// <summary>
 		/// Creates a new instance of the visualizer.
@@ -40,13 +48,45 @@ namespace MarchingCubes.Scenes
 			_finishedMeshPen = new SolidColorPen(Color.Black);
 			_finsihedMeshBrush = new SolidColorBrush(Color.Green);
 
+			_pixel = new Texture2D(RenderContext.GraphicsDevice, 1, 1);
+			_pixel.SetData(new[] { Color.White });
 			// isolevel defines which points are inside/outside the structure
 			var isolevel = 128;
 			_marchingCubesWorker = new VisualizerBackgroundWorker(RenderContext, InputData, isolevel);
-			var visualizer = new ActiveCubeVisualizer(RenderContext, InputData, _marchingCubesWorker, Camera);
-			visualizer.Initialize();
-			AddAsync(visualizer);
+			_visualizer = new ActiveCubeVisualizer(RenderContext, InputData, _marchingCubesWorker, Camera);
+			_visualizer.Initialize();
+			AddAsync(_visualizer);
 			Initialized = true;
+		}
+
+		/// <summary>
+		/// Updates the visualizer.
+		/// </summary>
+		/// <param name="gameTime"></param>
+		public override void Update(GameTime gameTime)
+		{
+			var kb = Keyboard.GetState();
+			var mouse = Mouse.GetState();
+			// allow the user to pause the algorithm to inspect the elements
+			if (kb.IsKeyDown(Keys.Space) && _lastKeyboardState.IsKeyUp(Keys.Space))
+			{
+				_paused = !_paused;
+				_visualizer.SetPause(_paused);
+			}
+			if (mouse.RightButton == ButtonState.Pressed && _lastMouse.RightButton == ButtonState.Released)
+			{
+				ToggleCameraAttach();
+			}
+
+			if ((kb.IsKeyDown(Keys.Enter) && _lastKeyboardState.IsKeyUp(Keys.Enter)) ||
+				(kb.IsKeyDown(Keys.E) && _lastKeyboardState.IsKeyUp(Keys.E)))
+			{
+				_visualizer.Step();
+			}
+
+			_lastKeyboardState = kb;
+			_lastMouse = mouse;
+			base.Update(gameTime);
 		}
 
 		/// <summary>
@@ -58,6 +98,15 @@ namespace MarchingCubes.Scenes
 			DrawMesh(_marchingCubesWorker.GetMeshToDraw(), _finsihedMeshBrush, _finishedMeshPen);
 
 			base.Draw(gameTime);
+
+			if (_paused)
+			{
+				// draw border to indicate pause
+				RenderContext.DrawTexture(_pixel, new Rectangle(0, 0, RenderContext.GraphicsDevice.Viewport.Width, 1), Color.Orange);
+				RenderContext.DrawTexture(_pixel, new Rectangle(0, 0, 1, RenderContext.GraphicsDevice.Viewport.Height), Color.Orange);
+				RenderContext.DrawTexture(_pixel, new Rectangle(RenderContext.GraphicsDevice.Viewport.Width - 1, 0, RenderContext.GraphicsDevice.Viewport.Width, 1), Color.Orange);
+				RenderContext.DrawTexture(_pixel, new Rectangle(0, RenderContext.GraphicsDevice.Viewport.Height - 1, 1, RenderContext.GraphicsDevice.Viewport.Height), Color.Orange);
+			}
 		}
 	}
 }

@@ -28,11 +28,17 @@ namespace MarchingCubes
 		private KeyboardState _lastKeyboardState;
 
 		/// <summary>
+		/// Current instance of the game.
+		/// </summary>
+		public static Game Instance;
+
+		/// <summary>
 		/// Default ctor.
 		/// </summary>
 		public Game()
 		{
 			_graphicsDeviceManager = new GraphicsDeviceManager(this);
+			Instance = this;
 		}
 
 		/// <summary>
