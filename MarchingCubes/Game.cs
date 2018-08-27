@@ -80,7 +80,7 @@ namespace MarchingCubes
 			var kb = Keyboard.GetState();
 			if (kb.IsKeyDown(Keys.Escape))
 			{
-				Exit();
+				Environment.Exit(0);
 				return;
 			}
 			if (kb.IsKeyDown(Keys.F1))
