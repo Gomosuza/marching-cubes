@@ -42,10 +42,6 @@
       <HintPath>..\packages\MonoGame.Framework.WindowsDX.3.5.1.1679\lib\net40\MonoGame.Framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Renderer, Version=0.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Renderer.0.0.4\lib\net461\Renderer.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
@@ -96,7 +92,23 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Renderer\Renderer\Renderer.csproj">
+      <Project>{cd899ae0-9431-4157-b891-1d6cc48db060}</Project>
+      <Name>Renderer</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>REM https://stackoverflow.com/a/43923071
+
+SET sourceDir=$(SolutionDir)packages
+SET destDir=$(SolutionDir)\Renderer\packages
+
+if not exist %25sourceDir%25 mkdir %25sourceDir%25
+
+if not exist %25destDir%25 mklink /j %25destDir%25 %25sourceDir%25</PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

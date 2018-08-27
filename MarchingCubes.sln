@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2003
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarchingCubes", "MarchingCubes\MarchingCubes.csproj", "{794B3E20-BC63-4A39-922C-8EE5B3C6CDA7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarchingCubes.Tests", "MarchingCubes.Tests\MarchingCubes.Tests.csproj", "{2B5CA60A-E66A-4B5B-BD7B-208B1E67FD35}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoxelGen", "VoxelGen\VoxelGen.csproj", "{FBD5D76A-020E-4610-A653-9B2856108274}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Renderer", "Renderer\Renderer\Renderer.csproj", "{CD899AE0-9431-4157-B891-1D6CC48DB060}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,8 +29,15 @@ Global
 		{FBD5D76A-020E-4610-A653-9B2856108274}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FBD5D76A-020E-4610-A653-9B2856108274}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FBD5D76A-020E-4610-A653-9B2856108274}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD899AE0-9431-4157-B891-1D6CC48DB060}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD899AE0-9431-4157-B891-1D6CC48DB060}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD899AE0-9431-4157-B891-1D6CC48DB060}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD899AE0-9431-4157-B891-1D6CC48DB060}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6576A829-AA39-4354-9AC2-ADF3A702B823}
 	EndGlobalSection
 EndGlobal
