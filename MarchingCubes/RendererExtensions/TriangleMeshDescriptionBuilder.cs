@@ -5,16 +5,16 @@ using System.Collections.Generic;
 namespace MarchingCubes.RendererExtensions
 {
     /// <summary>
-    /// A triangle mesh description builder for <see cref="VertexPositionNormalTexture"/> meshes.
+    /// A triangle mesh description builder for <see cref="VertexPositionNormal"/> meshes.
     /// </summary>
-    public class TriangleMeshDescriptionBuilder : IMeshDescription<VertexPosition>
+    public class TriangleMeshDescriptionBuilder : IMeshDescription<VertexPositionNormal>
     {
         /// <summary>
         /// Creates a new instance of the <see cref="TriangleMeshDescriptionBuilder"/>.
         /// </summary>
         public TriangleMeshDescriptionBuilder()
         {
-            Vertices = new List<VertexPosition>();
+            Vertices = new List<VertexPositionNormal>();
         }
 
         /// <summary>
@@ -30,6 +30,6 @@ namespace MarchingCubes.RendererExtensions
         /// <summary>
         /// The actual vertices.
         /// </summary>
-        public List<VertexPosition> Vertices { get; }
+        public List<VertexPositionNormal> Vertices { get; }
     }
 }

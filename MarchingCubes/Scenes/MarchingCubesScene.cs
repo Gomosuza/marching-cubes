@@ -16,7 +16,7 @@ namespace MarchingCubes.Scenes
     {
 
         private Mesh _dataMesh;
-        private Brush _solidColorBrush;
+        private Brush _brush;
         private Pen _pen;
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace MarchingCubes.Scenes
         public override void Initialize()
         {
             base.Initialize();
-            _solidColorBrush = new SolidColorBrush(Color.Green);
+            _brush = new NormalBrush();
             _pen = new SolidColorPen(Color.Black);
 
             var triangleBuilder = new TriangleMeshDescriptionBuilder();
@@ -98,7 +98,7 @@ namespace MarchingCubes.Scenes
         /// <param name="gameTime"></param>
         public override void Draw(GameTime gameTime)
         {
-            DrawMesh(_dataMesh, _solidColorBrush, _pen);
+            DrawMesh(_dataMesh, _brush, null);
 
             base.Draw(gameTime);
         }

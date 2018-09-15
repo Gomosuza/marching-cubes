@@ -20,7 +20,7 @@ namespace MarchingCubes.Scenes.Visualizer
         private readonly DynamicMesh _mesh2;
         private bool _mesh1IsBeingEdited;
 
-        private readonly List<VertexPosition> _vertices;
+        private readonly List<VertexPositionNormal> _vertices;
         private readonly MarchingCubesAlgorithm _marchingCubesAlgorithm;
         private readonly IInputData _inputData;
         private readonly int _isoLevel;
@@ -51,9 +51,9 @@ namespace MarchingCubes.Scenes.Visualizer
             _backgroundWorker.DoWork += MarchCube;
             _backgroundWorker.RunWorkerCompleted += CubeMarched;
 
-            _mesh1 = renderContext.MeshCreator.CreateDynamicMesh(PrimitiveType.TriangleList, typeof(VertexPosition), VertexPosition.VertexDeclaration, DynamicMeshUsage.UpdateOften);
-            _mesh2 = renderContext.MeshCreator.CreateDynamicMesh(PrimitiveType.TriangleList, typeof(VertexPosition), VertexPosition.VertexDeclaration, DynamicMeshUsage.UpdateOften);
-            _vertices = new List<VertexPosition>();
+            _mesh1 = renderContext.MeshCreator.CreateDynamicMesh(PrimitiveType.TriangleList, typeof(VertexPositionNormal), VertexPositionColor.VertexDeclaration, DynamicMeshUsage.UpdateOften);
+            _mesh2 = renderContext.MeshCreator.CreateDynamicMesh(PrimitiveType.TriangleList, typeof(VertexPositionNormal), VertexPositionColor.VertexDeclaration, DynamicMeshUsage.UpdateOften);
+            _vertices = new List<VertexPositionNormal>();
             _marchingCubesAlgorithm = new MarchingCubesAlgorithm(false);
 
             // setup our indices so we don't have to recheck everytime we need this info

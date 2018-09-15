@@ -38,7 +38,7 @@ namespace MarchingCubes
         /// <param name="isolevel"></param>
         /// <param name="cube">A bounding box that represents the data to check. Currently all values must be castable to ints.</param>
         /// <returns>Null or empty list when the cube contains no data to polygonize, otherwise list with all vertices that make up the polygon. List is always a multiple of 3.</returns>
-        public List<VertexPosition> Polygonize(IInputData inputData, int isolevel, BoundingBox cube)
+        public List<VertexPositionNormal> Polygonize(IInputData inputData, int isolevel, BoundingBox cube)
         {
             int x1 = (int)cube.Min.X;
             int y1 = (int)cube.Min.Y;
@@ -102,16 +102,27 @@ namespace MarchingCubes
 
             // generate the triangles from the vertexlist
 
-            var triangles = new List<VertexPosition>();
+            var triangles = new List<VertexPositionNormal>();
             var arr = _triangleTable[index];
             for (int i = 0; arr[i] != -1; i += 3)
             {
+                var a = _vertexPositions[arr[i + 2]];
+                var b = _vertexPositions[arr[i + 1]];
+                var c = _vertexPositions[arr[i + 0]];
+
+                var side1 = a - c;
+                var side2 = a - b;
+                var normal = Vector3.Cross(side1, side2);
+                if (!_clockwise)
+                {
+                    normal = -normal;
+                }
                 var tri = new[]
                 {
                     // fill in inverse order as we cull counterclockwise
-                    new VertexPosition(_vertexPositions[arr[i + 2]]),
-                    new VertexPosition(_vertexPositions[arr[i + 1]]),
-                    new VertexPosition(_vertexPositions[arr[i + 0]])
+                    new VertexPositionNormal(a, normal),
+                    new VertexPositionNormal(b, normal),
+                    new VertexPositionNormal(c, normal)
                 };
                 if (_clockwise)
                 {
