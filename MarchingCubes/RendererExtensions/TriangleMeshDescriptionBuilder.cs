@@ -4,32 +4,32 @@ using System.Collections.Generic;
 
 namespace MarchingCubes.RendererExtensions
 {
-	/// <summary>
-	/// A triangle mesh description builder for <see cref="VertexPositionNormalTexture"/> meshes.
-	/// </summary>
-	public class TriangleMeshDescriptionBuilder : IMeshDescription<VertexPosition>
-	{
-		/// <summary>
-		/// Creates a new instance of the <see cref="TriangleMeshDescriptionBuilder"/>.
-		/// </summary>
-		public TriangleMeshDescriptionBuilder()
-		{
-			Vertices = new List<VertexPosition>();
-		}
+    /// <summary>
+    /// A triangle mesh description builder for <see cref="VertexPositionNormalTexture"/> meshes.
+    /// </summary>
+    public class TriangleMeshDescriptionBuilder : IMeshDescription<VertexPosition>
+    {
+        /// <summary>
+        /// Creates a new instance of the <see cref="TriangleMeshDescriptionBuilder"/>.
+        /// </summary>
+        public TriangleMeshDescriptionBuilder()
+        {
+            Vertices = new List<VertexPosition>();
+        }
 
-		/// <summary>
-		/// The primitive type in use, this will always be <see cref="Microsoft.Xna.Framework.Graphics.PrimitiveType.TriangleList"/>.
-		/// </summary>
-		public PrimitiveType PrimitiveType => PrimitiveType.TriangleList;
+        /// <summary>
+        /// The primitive type in use, this will always be <see cref="Microsoft.Xna.Framework.Graphics.PrimitiveType.TriangleList"/>.
+        /// </summary>
+        public PrimitiveType PrimitiveType => PrimitiveType.TriangleList;
 
-		/// <summary>
-		/// The total vertex count.
-		/// </summary>
-		public int VertexCount => Vertices.Count;
+        /// <summary>
+        /// The total vertex count.
+        /// </summary>
+        public int VertexCount => Vertices.Count;
 
-		/// <summary>
-		/// The actual vertices.
-		/// </summary>
-		public List<VertexPosition> Vertices { get; }
-	}
+        /// <summary>
+        /// The actual vertices.
+        /// </summary>
+        public List<VertexPosition> Vertices { get; }
+    }
 }

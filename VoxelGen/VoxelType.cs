@@ -1,7 +1,7 @@
 ﻿namespace VoxelGen
 {
-	public enum VoxelType
-	{
-		Sphere
-	}
+    public enum VoxelType
+    {
+        Sphere
+    }
 }
