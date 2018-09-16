@@ -10,7 +10,7 @@ First compile might fail as it sets up ntfs junction so submodule gets access to
 
 You should not have to install monogame, unless you are missing some common DirectX redistributables.
  
-## Sample result
+## Sample results
  
 ![MRI result](/mri.png?raw=true)
 
