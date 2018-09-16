@@ -49,7 +49,7 @@ namespace MarchingCubes
             Content.RootDirectory = "Content";
 
             _availableAssets = Directory.GetFiles(Content.RootDirectory, "*.zip").Select(a => a.Substring(Content.RootDirectory.Length + 1)).ToArray();
-            _selectedAsset = _availableAssets[_assetIndex = 1];
+            _selectedAsset = _availableAssets[_assetIndex = 0];
 
             _renderContext = new DefaultRenderContext(_graphicsDeviceManager, Content);
 

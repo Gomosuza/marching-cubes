@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace MarchingCubes
@@ -22,11 +23,6 @@ namespace MarchingCubes
             {
                 return VertexDeclaration;
             }
-        }
-        public override int GetHashCode()
-        {
-            // TODO: FIc gethashcode
-            return 0;
         }
 
         public override string ToString()
@@ -55,6 +51,14 @@ namespace MarchingCubes
                 return false;
             }
             return (this == ((VertexPositionNormal)obj));
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = 1065448492;
+            hashCode = hashCode * -1521134295 + EqualityComparer<Vector3>.Default.GetHashCode(Position);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Vector3>.Default.GetHashCode(Normal);
+            return hashCode;
         }
 
         static VertexPositionNormal()

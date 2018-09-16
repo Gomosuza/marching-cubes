@@ -14,6 +14,7 @@ namespace MarchingCubes.Scenes
     /// </summary>
     public class MarchingCubesScene : MarchingCubeBaseScene, ISceneGraphEntityInitializeProgressReporter
     {
+        private const int _isolevel = 128;
 
         private Mesh _dataMesh;
         private Brush _brush;
@@ -45,7 +46,6 @@ namespace MarchingCubes.Scenes
 
             var triangleBuilder = new TriangleMeshDescriptionBuilder();
             // isolevel defines which points are inside/outside the structure
-            var isolevel = 128;
             int lastProgress = 0;
 
             // for each point we will at all 8 points forming a cube, we will simply take the index + 1 in each direction, thus our iteration counters must be reduced by 1 to prevent out of bound exception
@@ -78,7 +78,7 @@ namespace MarchingCubes.Scenes
                         box.Max.X = x + 1;
                         box.Max.Y = y + 1;
                         box.Max.Z = z + 1;
-                        var vertices = mcAlgo.Polygonize(InputData, isolevel, box);
+                        var vertices = mcAlgo.Polygonize(InputData, _isolevel, box);
                         if (vertices != null && vertices.Count > 0)
                             triangleBuilder.Vertices.AddRange(vertices);
                     }

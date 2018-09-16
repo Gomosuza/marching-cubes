@@ -85,6 +85,7 @@
     <Compile Include="VertexPositionNormal.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Content\CutGeometry.zip" />
     <None Include="Content\mri.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

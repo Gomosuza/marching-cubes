@@ -46,6 +46,9 @@ namespace VoxelGen
                 case VoxelType.Sphere:
                     GenerateSphere(buffer, x, y, z);
                     break;
+                case VoxelType.CutGeometry:
+                    CutGeometry(buffer, x, y, z);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
@@ -87,6 +90,67 @@ namespace VoxelGen
                     }
                 }
             }
+        }
+
+        private static void CutGeometry(byte[] buffer, int xlen, int ylen, int zlen)
+        {
+            // take a sphere and cut a cylinder (along Z axis) and a partial sphere (slightly offset on the X axis) from it
+            var min = Math.Min(xlen, Math.Min(ylen, zlen));
+            // prefer 10% margin
+            var prefferedRadius = min * 0.9f / 2f;
+            var centerX = xlen / 2f;
+            var centerY = ylen / 2f;
+            var centerZ = zlen / 2f;
+            var radiusSquared = prefferedRadius * prefferedRadius;
+
+            // cylinder is in center (same as sphere)
+            var cutCylinderRadius = min * 0.5f / 2f;
+            var cylinderRadiusSquared = cutCylinderRadius * cutCylinderRadius;
+            var cylinderOrientationX = 0;
+            var cylinderOrientationY = 0;
+            var cylinderOrientationZ = -1;
+
+            var cutSphereX = xlen / 2f - xlen / 4f;
+            var cutSphereY = ylen / 2f;
+            var cutSphereZ = zlen / 2f;
+            var cutSphereRadiusSquared = Math.Pow((min * 0.5f) / 2f, 2);
+            for (int x = 0; x < xlen; x++)
+            {
+                for (int y = 0; y < ylen; y++)
+                {
+                    for (int z = 0; z < zlen; z++)
+                    {
+                        // given geometry represented by math we compute whether we are inside or outside the geometry
+
+                        var sphereDistance = DistanceSquared(x, y, z, centerX, centerY, centerZ);
+                        if (sphereDistance < radiusSquared)
+                        {
+                            // inside the sphere, check if inside the cut geometry and ignore in those cases, otherwise fill
+                            // ignore Z for cylinder as it is oriented along the Z axis
+                            var cylinderDistance = DistanceSquaredZ(x, y, centerX, centerY);
+                            if (cylinderDistance > cylinderRadiusSquared)
+                            {
+                                // outside the cylinder
+                                // finally check the cut sphere
+
+                                var cutSphereDistance = DistanceSquared(x, y, z, cutSphereX, cutSphereY, cutSphereZ);
+                                if (cutSphereDistance > cutSphereRadiusSquared)
+                                {
+                                    // inside sphere but outside cylinder and outside cut sphere -> only possible place for geometry
+                                    buffer[Index(x, y, z, xlen, ylen)] = 255;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static float DistanceSquaredZ(int x, int y, float centerX, float centerY)
+        {
+            return (x - centerX) * (x - centerX) +
+                    (y - centerY) * (y - centerY);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -2,6 +2,7 @@
 {
     public enum VoxelType
     {
-        Sphere
+        Sphere,
+        CutGeometry
     }
 }
