@@ -49,7 +49,7 @@ namespace MarchingCubes
             Content.RootDirectory = "Content";
 
             _availableAssets = Directory.GetFiles(Content.RootDirectory, "*.zip").Select(a => a.Substring(Content.RootDirectory.Length + 1)).ToArray();
-            _selectedAsset = _availableAssets[0];
+            _selectedAsset = _availableAssets[_assetIndex = 1];
 
             _renderContext = new DefaultRenderContext(_graphicsDeviceManager, Content);
 
@@ -89,7 +89,7 @@ namespace MarchingCubes
                 {
                     "Keybindings:",
                     "F5 - starts the marching cube visualizer",
-                    "F6 - loads the finsihed marching cubes result",
+                    "F6 - loads the finished marching cubes result",
                     "F7 - cycles through and changes the currently loaded asset (this reloads the current mode)"
                 };
                 MessageBox.Show(string.Join(Environment.NewLine, message));

@@ -21,7 +21,7 @@ namespace MarchingCubes.Scenes
     public class MarchingCubeVisualizer : MarchingCubeBaseScene
     {
         private VisualizerBackgroundWorker _marchingCubesWorker;
-        private Brush _finsihedMeshBrush;
+        private Brush _finishedMeshBrush;
         private Pen _finishedMeshPen;
         private bool _paused;
         private Texture2D _pixel;
@@ -46,7 +46,7 @@ namespace MarchingCubes.Scenes
             base.Initialize();
 
             _finishedMeshPen = new SolidColorPen(Color.Black);
-            _finsihedMeshBrush = new SolidColorBrush(Color.Green);
+            _finishedMeshBrush = new NormalBrush();
 
             _pixel = new Texture2D(RenderContext.GraphicsDevice, 1, 1);
             _pixel.SetData(new[] { Color.White });
@@ -95,7 +95,7 @@ namespace MarchingCubes.Scenes
         /// <param name="gameTime"></param>
         public override void Draw(GameTime gameTime)
         {
-            DrawMesh(_marchingCubesWorker.GetMeshToDraw(), _finsihedMeshBrush, _finishedMeshPen);
+            DrawMesh(_marchingCubesWorker.GetMeshToDraw(), _finishedMeshBrush, null);
 
             base.Draw(gameTime);
 

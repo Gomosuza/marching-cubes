@@ -28,7 +28,6 @@ namespace MarchingCubes.Scenes.Visualizer
         private readonly Mesh _visualizerMesh;
         private readonly Mesh _visualizerLineMesh;
 
-        private readonly Brush _brush;
         private readonly SolidColorPen _pen;
 
         private int _currentCubeIndex;
@@ -50,7 +49,6 @@ namespace MarchingCubes.Scenes.Visualizer
             _inputData = inputData;
             _backgroundWorker = backgroundWorker;
             _camera = camera;
-            _brush = new SolidColorBrush(Color.AliceBlue);
             _pen = new SolidColorPen(Color.Red, CullMode.None);
             // we want to draw the outside surfaces of the currently worked on cube and its outline
             // currently this requires 2 meshes: one with the surfaces as triangles (for coloring) and one with only the outline as lines
@@ -152,7 +150,7 @@ namespace MarchingCubes.Scenes.Visualizer
                     var p = GetPositionFromIndex(idx);
                     var transform = Matrix.CreateTranslation(p);
 
-                    _renderContext.DrawMesh(_visualizerMesh, transform, _camera.View, _camera.Projection, _brush);
+                    //_renderContext.DrawMesh(_visualizerMesh, transform, _camera.View, _camera.Projection, _brush);
 
                     _renderContext.DrawMesh(_visualizerLineMesh, transform, _camera.View, _camera.Projection, null, _pen);
                 }

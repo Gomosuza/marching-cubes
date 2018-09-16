@@ -31,7 +31,7 @@ namespace MarchingCubes.Scenes.Visualizer
         /// Number of cubes that are marched at once at a minimum.
         /// Each cube may not necesarily generate vertices (if its outside the dataset) but many cubes will generate more than 1 primitive.
         /// </summary>
-        private const int VertexGenerationMinBatchSize = 1024 * 1024;
+        private const int VertexGenerationMinBatchSize = 1024;
         private int _lookupTableWriteIndex;
         private int _lookupTableReadIndex;
         private int _primitiveCount;
@@ -51,8 +51,8 @@ namespace MarchingCubes.Scenes.Visualizer
             _backgroundWorker.DoWork += MarchCube;
             _backgroundWorker.RunWorkerCompleted += CubeMarched;
 
-            _mesh1 = renderContext.MeshCreator.CreateDynamicMesh(PrimitiveType.TriangleList, typeof(VertexPositionNormal), VertexPositionColor.VertexDeclaration, DynamicMeshUsage.UpdateOften);
-            _mesh2 = renderContext.MeshCreator.CreateDynamicMesh(PrimitiveType.TriangleList, typeof(VertexPositionNormal), VertexPositionColor.VertexDeclaration, DynamicMeshUsage.UpdateOften);
+            _mesh1 = renderContext.MeshCreator.CreateDynamicMesh(PrimitiveType.TriangleList, typeof(VertexPositionNormal), VertexPositionNormal.VertexDeclaration, DynamicMeshUsage.UpdateOften);
+            _mesh2 = renderContext.MeshCreator.CreateDynamicMesh(PrimitiveType.TriangleList, typeof(VertexPositionNormal), VertexPositionNormal.VertexDeclaration, DynamicMeshUsage.UpdateOften);
             _vertices = new List<VertexPositionNormal>();
             _marchingCubesAlgorithm = new MarchingCubesAlgorithm(false);
 
@@ -67,7 +67,10 @@ namespace MarchingCubes.Scenes.Visualizer
                 {
                     for (int x = 0; x < _inputData.XLength - 1; x++)
                     {
-                        if (_inputData[x, y, z] > 0)
+                        // skipping doesn't work because it will skip edge cases such as flat surfaces
+                        // -> the cube doesn't have any data in it, but is next to one that does -> marching cubes will insert flat pane
+                        // if we skip it the final result will contain missing parts
+                        //if (_inputData[x, y, z] > 0)
                         {
                             var index = x + _inputData.XLength * (y + z * _inputData.YLength);
                             data.Add(index);
