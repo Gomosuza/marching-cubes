@@ -4,6 +4,7 @@ Marching cubes algorithm implemented in Monogame.
 
 ## Compile
 
+* Checkout submodule: git submodule init && git submodule update
 * Restore nuget packages for solution and compile in Visual Studio 
 
 First compile might fail as it sets up ntfs junction so submodule gets access to the package folder. Second compile should always work.
